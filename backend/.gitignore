@@ -1,2 +1,24 @@
-/.venv
-/.vscode
+# Ignore Python virtual environment
+.venv/
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore editor-specific files
+.vscode/
+.idea/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.dev
+.env.prod
+.env.test
+
+# Database files
+*.db
+test.db
