@@ -3,7 +3,10 @@ import os
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
-    DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"
+
+    @property
+    def isDev(self):
+        return self.ENVIRONMENT == "development"
 
     class Config:
         env_file = f".env.{os.getenv('ENVIRONMENT', 'development')}"
