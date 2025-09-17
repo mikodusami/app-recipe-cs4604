@@ -3,6 +3,11 @@ import os
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    # Default to SQLite for development, MySQL for production
+    DATABASE_URL: str = os.getenv("DATABASE_URL", 
+        "sqlite:///./cooking_assistant.db" if os.getenv("ENVIRONMENT", "development") == "development" 
+        else "mysql+mysqlconnector://user:password@localhost/cooking_assistant"
+    )
 
     @property
     def isDev(self):
