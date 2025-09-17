@@ -3,7 +3,7 @@ from src.core.settings import settings
 from src.core.database import engine, Base
 from src.routers import users
 
-app = FastAPI(title="AI Cooking Assistant API", description="AI-powered cooking assistant", docs_url="/api/docs")
+app = FastAPI(title="AI Cooking Assistant API", description="AI-powered cooking assistant")
 
 # Include routers
 app.include_router(users.router)
