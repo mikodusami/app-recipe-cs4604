@@ -1,0 +1,79 @@
+
+
+.sign-in-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.sign-in-form {
+    display: flex;
+    flex-direction: column;
+    background-color: #1f1f1f; /* Dark form background */
+    border-radius: 12px; /* Rounded corners for a sleeker look */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-sizing: border-box;
+    margin-top: 80px; /* Spacing below fixed navbar */
+    gap: 20px; /* More space between form elements */
+}
+
+/* Username and Password Field Styling */
+.sign-in-username, .sign-in-password {
+    margin-bottom: 15px;
+}
+
+.sign-in-username h1, .sign-in-password h1 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: 600; /* Slightly bolder text for better contrast */
+}
+
+.username-input, .password-input {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    color: #fff; /* Light text on dark background */
+    background-color: #333; /* Dark background for inputs */
+    border: 1px solid #444;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.username-input:focus, .password-input:focus {
+    border-color: #5b9bd5;
+    background-color: #444; /* Slightly lighter background on focus */
+}
+
+.username-input::placeholder, .password-input::placeholder {
+    color: #aaa; /* Light placeholder color for better visibility */
+}
+
+/* Submit Button Styling */
+.sign-in-submit{
+    padding: 12px; /* Increased height by adding more padding */
+    font-size: 18px; /* Increased font size for better visibility */
+    color: #fff; /* White text color */
+    background-color: #007bff; /* Solid blue background */
+    border: none;
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+}
+
+.sign-in-submit:hover {
+    background-color: #0056b3; /* Darker blue when hovered */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.sign-in-submit:active {
+    background-color: #004085; /* Even darker blue when clicked */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Inset shadow when active */
+}
