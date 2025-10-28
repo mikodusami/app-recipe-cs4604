@@ -6,6 +6,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Create Base class for models
+Base = declarative_base()
+
 try:
     engine = create_engine(settings.database_url)
     # Test connection and table existence
