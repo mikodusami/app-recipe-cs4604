@@ -2,8 +2,8 @@ import logging
 import logging.handlers
 import os
 from pathlib import Path
-import strings
-import settings
+from .settings import settings
+from . import strings
 
 # Define the logs directory in the main project directory (backend/logs/)
 LOG_DIR = Path(__file__).parents[2] / "logs"
@@ -58,7 +58,7 @@ error_logger = setup_logger("app.error", ERROR_LOG, logging.ERROR)
 critical_logger = setup_logger("app.critical", CRITICAL_LOG, logging.CRITICAL)
 
 # Optional: Add a console handler for debugging in development
-if settings.settings.isDev:
+if settings.DEBUG:
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(LOG_FORMAT)
     debug_logger.addHandler(console_handler)

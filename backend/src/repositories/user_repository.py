@@ -9,12 +9,12 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user_data: UserCreate, hashed_password: str) -> User:
-        """Create a new user with hashed password"""
+    def create_user(self, user_data: UserCreate) -> User:
+        """Create a new user"""
         try:
             db_user = User(
                 email=user_data.email,
-                hashed_password=hashed_password,
+                password=user_data.password,
                 role=user_data.role
             )
             self.db.add(db_user)
@@ -45,11 +45,7 @@ class UserRepository:
         
         update_data = user_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
-            if field == "password":
-                # Password should be hashed before calling this method
-                setattr(db_user, "hashed_password", value)
-            else:
-                setattr(db_user, field, value)
+            setattr(db_user, field, value)
         
         try:
             self.db.commit()
