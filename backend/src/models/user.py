@@ -16,10 +16,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String, nullable=False)
     role = Column(Enum(UserRole), default=UserRole.standard, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     favorite_recipes = relationship("FavoriteRecipe", back_populates="user", cascade="all, delete-orphan")
+    user_pantries = relationship("UserPantry", back_populates="user", cascade="all, delete-orphan")

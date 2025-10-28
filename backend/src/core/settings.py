@@ -1,5 +1,8 @@
 from pydantic_settings import BaseSettings
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
@@ -13,12 +16,22 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self):
+        # Debug logging to see what's happening
+        logger.info(f"ENVIRONMENT: '{self.ENVIRONMENT}'")
+        logger.info(f"DATABASE_HOST: '{self.DATABASE_HOST}'")
+        logger.info(f"DATABASE_USER: '{self.DATABASE_USER}'")
+        logger.info(f"DATABASE_NAME: '{self.DATABASE_NAME}'")
+        logger.info(f"DATABASE_PASSWORD set: {bool(self.DATABASE_PASSWORD)}")
+        
         if self.ENVIRONMENT == "production" and self.DATABASE_HOST and self.DATABASE_USER and self.DATABASE_PASSWORD and self.DATABASE_NAME:
             # Handle host with or without port
             host_part = self.DATABASE_HOST
             if ":" not in host_part:
                 host_part += ":3306"  # Default to 3306 if no port specified
-            return f"mysql://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{host_part}/{self.DATABASE_NAME}"
+            logger.info(f"Using MySQL connection: mysql+mysqlconnector://{self.DATABASE_USER}:***@{host_part}/{self.DATABASE_NAME}")
+            return f"mysql+mysqlconnector://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{host_part}/{self.DATABASE_NAME}"
+        
+        logger.info("Using SQLite connection: sqlite:///./dev.db")
         return "sqlite:///./dev.db"  # Default to SQLite for development
 
     class Config:

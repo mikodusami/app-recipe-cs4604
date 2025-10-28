@@ -1,0 +1,40 @@
+2. Problem Definition:
+The challenges of home cooking, such as ingredient limitations and mistakes during the process, often lead to frustration and a preference for takeout. This not only results in financial loss but also contributes to food waste. Our application will help users overcome these barriers by providing intelligent recipe suggestions based on available ingredients and assistance, making home cooking more accessible and rewarding.
+Functional Requirements:
+At the core of this AI cooking assistant is a recipe app. The  functional requirements for every recipe app, that is what features every recipe app should have is the following:
+Recipe database: The app must have a large and diverse collection of recipes.
+Search & Filters: The app must allow users to find specific recipes, which includes search bar and filtering for things like ingredients, dietary needs, cuisine, cooking time, difficulty level, etc.
+Step by Step Instructions: Each recipe should have clear, easy-to-follow instructions. This should include photos, short videos, but for now, let's make it all text for brevity.
+Ingredient List: The app shall display a complete list of ingredients with measurements for each recipe. 
+Saving & Favoriting: The app should allow users to be able to bookmark or save recipes they like for easy access later. 
+User Accounts: The app should contain a basic user profile allowing for saving favorite recipes.
+Our key specialization feature is the AI cooking assistant, but all the above features shall be built first before implementing the AI cooking assistant as a foundation to build the cooking assistant on. 
+The functional requirements for the AI cooking assistant is listed below:
+User Input & Search: 
+The user must be able to input a list of ingredients that have on hand
+The app must allow the user to search for a specific recipe by name or keyword
+The app must display search results clearly, allowing the user to choose a recipe from the list
+AI-Powered Recipe Generation & Salvage:
+The app must analyze the user's list of ingredients and, using the AI component, generate a relevant recipe from its database that uses only those ingredients
+The app must be able to provide adjustments or new instructions to help the user salvage their meal according to two factors: (a) how it tastes when finished or (b) a sudden mistake while following the recipe
+3. List of system users and privileges of each user: The three types of system users we will have in this application are Administrators, Standard Users, and Guest Users.
+Standard users are general users who will use the app for cooking. Their privileges include
+creating a new user account and profile
+searching for recipes by name, keyword, or ingredients
+viewing recipes details (ingredients, instructions)
+saving and bookmarking favorite recipes
+receiving ai powered recipe suggestions based on available ingredients
+receiving ai assistance to salvage a meal after a mistake
+filtering recipes by criteria such as dietary needs, cuisine, and cooking time
+Administrators are typically members of the application, responsible for managing the content, operations, and errors that occur within a single application. Their privileges include
+all privileges of a standard users
+adding new recipes to the database
+editing existing recipes
+deleting recipes
+managing user accounts
+managing the ai model / cooking assistant
+Guest users are members who can access the application without creating an account. Their privileges include
+searching for recipes by name, keyword, or ingredients
+viewing recipes details (ingredients, instructions)
+receiving ai powered recipe suggestions based on available ingredients
+Limited access: cannot save favorites or receive salvage assistance, as these features require a logged-in user profile to save data

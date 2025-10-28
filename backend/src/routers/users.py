@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..core.database import get_db
 from ..core.dependencies import get_api_key
-from ..schemas.user import UserCreate, UserUpdate, UserResponse, UserProfile
+from ..schemas.user import UserCreate, UserUpdate, UserResponse, UserProfile, LoginRequest
 from ..services.user_service import UserService
 
 
@@ -29,6 +29,21 @@ async def register_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
+
+@router.post("/login", response_model=UserResponse)
+async def login_user(
+    login_data: LoginRequest,
+    user_service: UserService = Depends(get_user_service)
+):
+    """Login user by email - returns user data if found"""
+    user = await user_service.login_user(login_data.email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return user
 
 
 @router.get("/profile/{user_id}", response_model=UserProfile)
