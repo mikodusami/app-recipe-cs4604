@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from ..core.database import get_db
+from ..core.dependencies import get_api_key
 from ..schemas.user import UserCreate, UserUpdate, UserResponse, UserProfile
 from ..services.user_service import UserService
 
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"], dependencies=[Depends(get_api_key)])
 
 
 def get_user_service(db: Session = Depends(get_db)) -> UserService:

@@ -40,7 +40,7 @@ def init_db():
         # Create sample user
         sample_user = User(
             email="test@example.com",
-            hashed_password="hashed_password_here",
+            password="password123",
             role=UserRole.standard
         )
         db.add(sample_user)

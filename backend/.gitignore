@@ -17,7 +17,7 @@ Thumbs.db
 # Environment files
 .env
 .env.dev
-.env.prod
+.env.production
 .env.test
 
 # Database files

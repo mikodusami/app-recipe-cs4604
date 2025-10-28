@@ -5,6 +5,5 @@ alembic
 mysql-connector-python
 pytest
 pytest-asyncio
-passlib[bcrypt]
 python-multipart
 email-validator

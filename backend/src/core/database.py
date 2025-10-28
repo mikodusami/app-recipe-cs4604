@@ -1,26 +1,27 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-from .settings import settings
+from sqlalchemy import create_engine, inspect
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from src.core.settings import settings
+import logging
 
-# Database URL - using MySQL for production, SQLite for development
-DATABASE_URL = getattr(settings, 'DATABASE_URL', 'sqlite:///./cooking_assistant.db')
-
-# Create SQLAlchemy engine
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-)
-
-# Create SessionLocal class
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+logger = logging.getLogger(__name__)
 
 # Create Base class for models
 Base = declarative_base()
 
-# Dependency to get database session
+try:
+    engine = create_engine(settings.database_url)
+    # Test connection and table existence
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    logger.info("Database engine and session initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize database: {e}")
+    raise
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
