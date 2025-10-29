@@ -13,9 +13,6 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
-mycursor.execute("SELECT * FROM Users")
-data = mycursor.fetchall()
-for i in data:
-    print("name:", i[1])
+
     
 

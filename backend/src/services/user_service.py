@@ -45,16 +45,12 @@ class UserService:
             return UserResponse.model_validate(db_user)
         return None
 
-    async def authenticate_user(self, email: str, password: str) -> Optional[User]:
-        """Authenticate user with email and password"""
-        db_user = await self.get_user_by_email(email)
-        if not db_user:
-            return None
-        
-        if password != db_user.password:
-            return None
-        
-        return db_user
+    async def login_user(self, email: str) -> Optional[UserResponse]:
+        """Login user by email - returns user data if found"""
+        db_user = self.user_repo.get_user_by_email(email)
+        if db_user:
+            return UserResponse.model_validate(db_user)
+        return None
 
     async def delete_user(self, user_id: int) -> bool:
         """Delete user"""
