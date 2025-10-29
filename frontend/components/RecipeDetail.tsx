@@ -109,152 +109,165 @@ export function RecipeDetail({ recipe, onBack, className }: RecipeDetailProps) {
     (recipe.prep_time_in_minutes || 0) + (recipe.cook_time_in_minutes || 0);
 
   return (
-    <div className={cn("max-w-4xl mx-auto bg-card", className)}>
-      {/* Header Section */}
-      <div className="relative">
-        {/* Back Button - Mobile optimized */}
-        {onBack && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onBack}
-            className={cn(
-              "mb-4",
-              "min-h-[44px] min-w-[44px] touch-manipulation",
-              "text-sm sm:text-base"
-            )}
-          >
-            ← Back
-          </Button>
-        )}
-      </div>
+    <div className={cn("", className)}>
+      {/* Hero Section */}
+      <section className="px-8 md:px-16 lg:px-24 py-8 md:py-12 border-b border-[#F5F5F5]">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-[#6B7280] hover:text-[#121212] 
+                       transition-colors duration-200 mb-8 group"
+            >
+              <span className="group-hover:-translate-x-1 transition-transform duration-200">
+                ←
+              </span>
+              <span className="font-medium">Back to Recipes</span>
+            </button>
+          )}
+
+          {/* Recipe Header */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+            <div className="flex-1">
+              {/* Category Badge */}
+              {recipe.category && (
+                <div className="mb-4">
+                  <span
+                    className="inline-block px-3 py-1 text-sm font-medium bg-[#F5F5F5] 
+                                 text-[#6B7280] rounded"
+                  >
+                    {recipe.category}
+                  </span>
+                </div>
+              )}
+
+              {/* Recipe Title */}
+              <h1
+                className="font-poppins text-3xl md:text-4xl lg:text-5xl font-semibold 
+                           text-[#121212] mb-6 leading-tight"
+              >
+                {recipe.name}
+              </h1>
+
+              {/* Recipe Stats */}
+              <div className="flex flex-wrap gap-6 text-sm text-[#6B7280]">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-[#8B4513]">
+                    INGREDIENTS
+                  </span>
+                  <span>{recipe.ingredients.length}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-[#8B4513]">STEPS</span>
+                  <span>{recipe.steps.length}</span>
+                </div>
+                {totalTime > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-[#8B4513]">
+                      TOTAL TIME
+                    </span>
+                    <span>{formatTime(totalTime)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:w-48">
+              {isAuthenticated && (
+                <Button
+                  variant={isFavorited ? "primary" : "secondary"}
+                  onClick={handleFavoriteToggle}
+                  disabled={isToggling}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <span className="text-xs font-bold">
+                    {isToggling ? "..." : isFavorited ? "♥" : "♡"}
+                  </span>
+                  {isFavorited ? "Favorited" : "Save Recipe"}
+                </Button>
+              )}
+
+              <Button
+                variant="ghost"
+                onClick={handleShare}
+                className="flex items-center justify-center gap-2"
+              >
+                <span className="text-xs">📤</span>
+                Share Recipe
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Time Information */}
+      {(recipe.prep_time_in_minutes || recipe.cook_time_in_minutes) && (
+        <section className="px-8 md:px-16 lg:px-24 py-8 bg-[#F5F5F5]">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {recipe.prep_time_in_minutes && (
+                <div className="text-center">
+                  <div className="text-[#8B4513] font-semibold text-xs tracking-wide mb-2">
+                    PREP TIME
+                  </div>
+                  <div className="font-poppins text-2xl font-semibold text-[#121212]">
+                    {formatTime(recipe.prep_time_in_minutes)}
+                  </div>
+                </div>
+              )}
+
+              {recipe.cook_time_in_minutes && (
+                <div className="text-center">
+                  <div className="text-[#8B4513] font-semibold text-xs tracking-wide mb-2">
+                    COOK TIME
+                  </div>
+                  <div className="font-poppins text-2xl font-semibold text-[#121212]">
+                    {formatTime(recipe.cook_time_in_minutes)}
+                  </div>
+                </div>
+              )}
+
+              {totalTime > 0 && (
+                <div className="text-center">
+                  <div className="text-[#8B4513] font-semibold text-xs tracking-wide mb-2">
+                    TOTAL TIME
+                  </div>
+                  <div className="font-poppins text-2xl font-semibold text-[#121212]">
+                    {formatTime(totalTime)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Recipe Content */}
-      <div className="p-4 sm:p-6">
-        {/* Title and Actions */}
-        <div className="flex flex-col gap-4 mb-6">
-          <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-card-foreground mb-3 leading-tight">
-              {recipe.name}
-            </h1>
-
-            {recipe.category && (
-              <span className="inline-block px-3 py-1 text-sm font-medium bg-orange-100 text-orange-800 rounded-full">
-                {recipe.category}
-              </span>
-            )}
-          </div>
-
-          {/* Action Buttons - Mobile optimized */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {isAuthenticated && (
-              <Button
-                variant={isFavorited ? "primary" : "secondary"}
-                onClick={handleFavoriteToggle}
-                disabled={isToggling}
-                className={cn(
-                  "flex items-center justify-center gap-2 touch-manipulation",
-                  "min-h-[48px] text-base font-medium",
-                  "active:scale-95 transition-transform"
-                )}
-              >
-                <span
-                  className={cn(
-                    "text-sm font-bold",
-                    isToggling
-                      ? "text-muted-foreground"
-                      : isFavorited
-                      ? "text-orange-500"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {isToggling ? "..." : isFavorited ? "FAVORITED" : "FAVORITE"}
-                </span>
-                {isFavorited ? "Favorited" : "Add to Favorites"}
-              </Button>
-            )}
-
-            <Button
-              variant="ghost"
-              onClick={handleShare}
-              className={cn(
-                "flex items-center justify-center gap-2 touch-manipulation",
-                "min-h-[48px] text-base",
-                "active:scale-95 transition-transform"
-              )}
-            >
-              <span className="text-sm font-bold text-orange-500">SHARE</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Time Information - Mobile optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 p-4 bg-muted rounded-lg">
-          {recipe.prep_time_in_minutes && (
-            <div className="text-center py-2">
-              <div className="text-orange-500 font-bold text-lg sm:text-xl ">
-                PREP
-              </div>
-              <div className="text-xs sm:text-sm text-muted-foreground mb-1">
-                Prep Time
-              </div>
-              <div className="font-semibold text-foreground text-sm sm:text-base">
-                {formatTime(recipe.prep_time_in_minutes)}
+      <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+            {/* Ingredients Section */}
+            <div className="lg:col-span-1">
+              <h2 className="font-poppins text-2xl md:text-3xl font-semibold text-[#121212] mb-8">
+                Ingredients
+              </h2>
+              <div className="lg:sticky lg:top-32">
+                <IngredientList ingredients={recipe.ingredients} />
               </div>
             </div>
-          )}
 
-          {recipe.cook_time_in_minutes && (
-            <div className="text-center py-2">
-              <div className="text-red-500 font-bold text-lg sm:text-xl mb-1">
-                COOK
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                Cook Time
-              </div>
-              <div className="font-semibold text-gray-900 text-sm sm:text-base">
-                {formatTime(recipe.cook_time_in_minutes)}
-              </div>
+            {/* Instructions Section */}
+            <div className="lg:col-span-2">
+              <h2 className="font-poppins text-2xl md:text-3xl font-semibold text-[#121212] mb-8">
+                Instructions
+              </h2>
+              <CookingSteps steps={recipe.steps} />
             </div>
-          )}
-
-          {totalTime > 0 && (
-            <div className="text-center py-2">
-              <div className="text-blue-500 font-bold text-lg sm:text-xl mb-1">
-                TOTAL
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                Total Time
-              </div>
-              <div className="font-semibold text-gray-900 text-sm sm:text-base">
-                {formatTime(totalTime)}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Recipe Content Grid - Mobile first approach */}
-        <div className="space-y-8 lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-0">
-          {/* Ingredients Section */}
-          <div className="lg:col-span-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-              Ingredients
-            </h2>
-            <IngredientList
-              ingredients={recipe.ingredients}
-              className="lg:sticky lg:top-4"
-            />
-          </div>
-
-          {/* Instructions Section */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-              Instructions
-            </h2>
-            <CookingSteps steps={recipe.steps} />
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

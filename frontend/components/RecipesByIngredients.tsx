@@ -23,7 +23,6 @@ export function RecipesByIngredients({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("match");
-  const [minMatchPercentage, setMinMatchPercentage] = useState(0);
 
   // Search for recipes when ingredients change
   useEffect(() => {
@@ -107,22 +106,6 @@ export function RecipesByIngredients({
     }
   };
 
-  const getMatchColor = (percentage: number): string => {
-    if (percentage >= 90)
-      return "text-orange-600 bg-orange-50 border-orange-200";
-    if (percentage >= 70)
-      return "text-orange-500 bg-orange-50 border-orange-200";
-    if (percentage >= 50) return "text-muted-foreground bg-muted border-border";
-    return "text-muted-foreground bg-muted border-border";
-  };
-
-  const getMatchLabel = (percentage: number): string => {
-    if (percentage >= 90) return "Excellent Match";
-    if (percentage >= 70) return "Good Match";
-    if (percentage >= 50) return "Partial Match";
-    return "Low Match";
-  };
-
   const formatTime = (minutes?: number): string => {
     if (!minutes) return "N/A";
     if (minutes < 60) return `${minutes}m`;
@@ -133,22 +116,22 @@ export function RecipesByIngredients({
       : `${hours}h`;
   };
 
-  // Filter recipes by minimum match percentage
-  const filteredRecipes = recipeMatches.filter(
-    (match) => match.match_percentage >= minMatchPercentage
-  );
+  // Just show all recipe matches
+  const filteredRecipes = recipeMatches;
 
   if (selectedIngredients.length === 0) {
     return (
-      <div className={cn("text-center py-12", className)}>
-        <div className="text-foreground font-bold text-2xl mb-4">
-          FIND RECIPES
+      <div className={cn("text-center py-16", className)}>
+        <div className="text-4xl mb-6">🍳</div>
+        <div className="font-poppins font-bold text-xl text-[#8B4513] mb-3">
+          Ready to Find Recipes?
         </div>
-        <h3 className="text-lg font-medium text-foreground mb-2">
-          Find Recipes by Ingredients
+        <h3 className="text-lg font-semibold text-[#121212] mb-2">
+          Select ingredients to get started
         </h3>
-        <p className="text-muted-foreground">
-          Select ingredients above to discover recipes you can make
+        <p className="text-[#6B7280] max-w-md mx-auto">
+          Choose ingredients from the left panel and we'll show you delicious
+          recipes you can make
         </p>
       </div>
     );
@@ -157,83 +140,62 @@ export function RecipesByIngredients({
   return (
     <div className={cn("w-full", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">
-            Recipe Suggestions
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Based on your {selectedIngredients.length} selected ingredients
-          </p>
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <h2 className="font-poppins text-2xl font-semibold text-[#121212]">
+              Recipe Suggestions
+            </h2>
+            <p className="text-[#6B7280]">
+              Based on your {selectedIngredients.length} selected ingredients
+            </p>
+          </div>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-4">
-          {/* Minimum Match Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              Min Match:
-            </label>
-            <select
-              value={minMatchPercentage}
-              onChange={(e) => setMinMatchPercentage(Number(e.target.value))}
-              className="px-2 py-1 border border-gray-300 rounded text-sm"
-            >
-              <option value={0}>Any</option>
-              <option value={25}>25%+</option>
-              <option value={50}>50%+</option>
-              <option value={75}>75%+</option>
-              <option value={90}>90%+</option>
-            </select>
-          </div>
-
-          {/* Sort Options */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              Sort by:
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="px-2 py-1 border border-gray-300 rounded text-sm"
-            >
-              <option value="match">Match %</option>
-              <option value="popularity">Popularity</option>
-              <option value="cook_time">Cook Time</option>
-              <option value="prep_time">Prep Time</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-semibold text-[#121212] tracking-wide">
+            SORT BY:
+          </label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="px-3 py-2 border border-[#E5E5E5] rounded text-sm bg-white"
+          >
+            <option value="match">Best Match</option>
+            <option value="popularity">Popularity</option>
+            <option value="cook_time">Cook Time</option>
+            <option value="prep_time">Prep Time</option>
+          </select>
         </div>
       </div>
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-12">
-          <div className="text-orange-500 font-bold text-2xl mb-4">
-            SEARCHING...
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-6"></div>
+          <div className="font-poppins font-bold text-xl text-[#8B4513] mb-2">
+            Searching Recipes...
           </div>
-          <p className="text-muted-foreground">Finding recipes...</p>
+          <p className="text-[#6B7280]">
+            Finding the perfect matches for your ingredients
+          </p>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-2">
-            <span className="text-red-500">⚠️</span>
-            <span className="text-red-700 font-medium">Error</span>
+        <div className="text-center py-16">
+          <div className="text-4xl mb-6">⚠️</div>
+          <div className="font-poppins font-bold text-xl text-[#8B4513] mb-3">
+            Something went wrong
           </div>
-          <p className="text-red-600 mt-1">
+          <p className="text-[#6B7280] mb-6 max-w-md mx-auto">
             {typeof error === "string"
               ? error
               : "An error occurred while searching for recipes"}
           </p>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={searchRecipesByIngredients}
-            className="mt-3"
-          >
+          <Button variant="primary" onClick={searchRecipesByIngredients}>
             Try Again
           </Button>
         </div>
@@ -243,49 +205,39 @@ export function RecipesByIngredients({
       {!loading && !error && (
         <>
           {/* Results Summary */}
-          <div className="mb-4 text-sm text-gray-600">
-            Found {filteredRecipes.length} recipes
-            {minMatchPercentage > 0 && ` with ${minMatchPercentage}%+ match`}
+          <div className="mb-6 text-sm font-medium text-[#6B7280]">
+            Found {filteredRecipes.length} related recipes
           </div>
 
           {/* Recipe Cards */}
           {filteredRecipes.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2">
               {filteredRecipes.map((match) => (
                 <div
                   key={match.recipe.id}
-                  className="bg-card border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="card-minimal p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
+                  onClick={() => onRecipeSelect?.(match.recipe)}
                 >
                   {/* Recipe Header */}
-                  <div className="mb-3">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-card-foreground line-clamp-2">
-                        {match.recipe.name}
-                      </h3>
-                      <div
-                        className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium border ml-2 shrink-0",
-                          getMatchColor(match.match_percentage)
-                        )}
-                      >
-                        {Math.round(match.match_percentage)}%
-                      </div>
-                    </div>
+                  <div className="mb-4">
+                    <h3 className="font-poppins font-semibold text-lg text-[#121212] line-clamp-2 mb-3">
+                      {match.recipe.name}
+                    </h3>
 
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-4 text-xs text-[#6B7280]">
                       {match.recipe.category && (
-                        <span className="px-2 py-1 bg-muted rounded">
+                        <span className="px-2 py-1 bg-[#F5F5F5] rounded">
                           {match.recipe.category}
                         </span>
                       )}
                       <span className="flex items-center gap-1">
-                        <span className="text-orange-500 font-bold text-xs">
+                        <span className="text-[#8B4513] font-bold text-xs">
                           PREP
                         </span>
                         {formatTime(match.recipe.prep_time_in_minutes)}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="text-orange-500 font-bold text-xs">
+                        <span className="text-[#8B4513] font-bold text-xs">
                           COOK
                         </span>
                         {formatTime(match.recipe.cook_time_in_minutes)}
@@ -293,31 +245,13 @@ export function RecipesByIngredients({
                     </div>
                   </div>
 
-                  {/* Match Status */}
-                  <div className="mb-3">
-                    <div className="text-xs font-medium text-foreground mb-1">
-                      {getMatchLabel(match.match_percentage)}
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div
-                        className={cn(
-                          "h-2 rounded-full transition-all",
-                          match.match_percentage >= 70
-                            ? "bg-orange-500"
-                            : "bg-muted-foreground"
-                        )}
-                        style={{ width: `${match.match_percentage}%` }}
-                      />
-                    </div>
-                  </div>
-
                   {/* Available Ingredients */}
                   {match.available_ingredients.length > 0 && (
                     <div className="mb-3">
-                      <div className="text-xs font-medium text-orange-600 mb-1">
-                        HAVE ({match.available_ingredients.length}):
+                      <div className="text-xs font-semibold text-[#8B4513] mb-1 tracking-wide">
+                        YOU HAVE ({match.available_ingredients.length}):
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-[#6B7280]">
                         {match.available_ingredients.slice(0, 3).join(", ")}
                         {match.available_ingredients.length > 3 &&
                           ` +${match.available_ingredients.length - 3} more`}
@@ -327,11 +261,11 @@ export function RecipesByIngredients({
 
                   {/* Missing Ingredients */}
                   {match.missing_ingredients.length > 0 && (
-                    <div className="mb-4">
-                      <div className="text-xs font-medium text-muted-foreground mb-1">
-                        NEED ({match.missing_ingredients.length}):
+                    <div className="mb-6">
+                      <div className="text-xs font-semibold text-[#6B7280] mb-1 tracking-wide">
+                        YOU NEED ({match.missing_ingredients.length}):
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-[#6B7280]">
                         {match.missing_ingredients.slice(0, 3).join(", ")}
                         {match.missing_ingredients.length > 3 &&
                           ` +${match.missing_ingredients.length - 3} more`}
@@ -342,8 +276,10 @@ export function RecipesByIngredients({
                   {/* Action Button */}
                   <Button
                     variant="primary"
-                    size="sm"
-                    onClick={() => onRecipeSelect?.(match.recipe)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRecipeSelect?.(match.recipe);
+                    }}
                     className="w-full"
                   >
                     View Recipe
@@ -353,26 +289,18 @@ export function RecipesByIngredients({
             </div>
           ) : (
             /* No Results */
-            <div className="text-center py-12">
-              <div className="text-muted-foreground font-bold text-2xl mb-4">
-                NO RECIPES
+            <div className="text-center py-16">
+              <div className="text-4xl mb-6">🔍</div>
+              <div className="font-poppins font-bold text-xl text-[#8B4513] mb-3">
+                No Recipes Found
               </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                No recipes found
+              <h3 className="text-lg font-semibold text-[#121212] mb-2">
+                No recipes match your ingredients
               </h3>
-              <p className="text-muted-foreground mb-4">
-                {minMatchPercentage > 0
-                  ? `Try lowering the minimum match percentage or selecting different ingredients.`
-                  : `We couldn't find any recipes with your selected ingredients. Try adding more common ingredients.`}
+              <p className="text-[#6B7280] max-w-md mx-auto">
+                We couldn't find any recipes with your selected ingredients. Try
+                adding more common ingredients or different combinations.
               </p>
-              {minMatchPercentage > 0 && (
-                <Button
-                  variant="secondary"
-                  onClick={() => setMinMatchPercentage(0)}
-                >
-                  Show All Matches
-                </Button>
-              )}
             </div>
           )}
         </>

@@ -161,10 +161,12 @@ export function FavoritesList({
   // Show loading state
   if (loading) {
     return (
-      <div className={cn("flex items-center justify-center py-12", className)}>
+      <div className={cn("flex items-center justify-center py-16", className)}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your favorites...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-6"></div>
+          <p className="text-[#6B7280] font-medium">
+            Loading your favorites...
+          </p>
         </div>
       </div>
     );
@@ -173,12 +175,12 @@ export function FavoritesList({
   // Show authentication required message
   if (!isAuthenticated) {
     return (
-      <div className={cn("text-center py-12", className)}>
-        <div className="text-6xl mb-4">🔒</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className={cn("text-center py-16", className)}>
+        <div className="text-6xl mb-6">🔒</div>
+        <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
           Sign in to view favorites
         </h3>
-        <p className="text-gray-600">
+        <p className="text-[#6B7280]">
           Create an account or sign in to save and view your favorite recipes.
         </p>
       </div>
@@ -188,13 +190,13 @@ export function FavoritesList({
   // Show error state
   if (error) {
     return (
-      <div className={cn("text-center py-12", className)}>
-        <div className="text-6xl mb-4">⚠️</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className={cn("text-center py-16", className)}>
+        <div className="text-6xl mb-6">⚠️</div>
+        <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
           Something went wrong
         </h3>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <Button onClick={loadFavorites} variant="secondary">
+        <p className="text-[#6B7280] mb-6">{error}</p>
+        <Button onClick={loadFavorites} variant="primary">
           Try Again
         </Button>
       </div>
@@ -204,18 +206,15 @@ export function FavoritesList({
   // Show empty state
   if (favorites.length === 0) {
     return (
-      <div className={cn("text-center py-12", className)}>
-        <div className="text-6xl mb-4">❤️</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className={cn("text-center py-16", className)}>
+        <div className="text-6xl mb-6">❤️</div>
+        <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
           No favorites yet
         </h3>
-        <p className="text-gray-600 mb-4">
+        <p className="text-[#6B7280] mb-8 max-w-md mx-auto">
           Start exploring recipes and save your favorites to see them here.
         </p>
-        <Button
-          onClick={() => (window.location.href = "/")}
-          variant="secondary"
-        >
+        <Button onClick={() => (window.location.href = "/")} variant="primary">
           Browse Recipes
         </Button>
       </div>
@@ -238,15 +237,15 @@ export function FavoritesList({
         </div>
 
         {/* Empty search results */}
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="text-center py-16">
+          <div className="text-6xl mb-6">🔍</div>
+          <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
             No favorites found
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-[#6B7280] mb-6">
             No favorites match your search for "{searchQuery}".
           </p>
-          <Button onClick={handleClearSearch} variant="secondary">
+          <Button onClick={handleClearSearch} variant="primary">
             Clear Search
           </Button>
         </div>
@@ -257,26 +256,29 @@ export function FavoritesList({
   return (
     <div className={cn("", className)}>
       {/* Header with search */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">My Favorites</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="font-poppins text-2xl font-semibold text-[#121212]">
+            My Favorites
+          </h2>
+          <p className="text-[#6B7280] mt-1">
             {favorites.length} favorite{" "}
             {favorites.length === 1 ? "recipe" : "recipes"}
           </p>
         </div>
 
-        <SearchBar
-          onSearch={handleSearchChange}
-          placeholder="Search favorites..."
-          initialValue={searchQuery}
-          showFiltersToggle={false}
-          className="max-w-sm"
-        />
+        <div className="lg:max-w-sm lg:w-full">
+          <SearchBar
+            onSearch={handleSearchChange}
+            placeholder="Search favorites..."
+            initialValue={searchQuery}
+            showFiltersToggle={false}
+          />
+        </div>
       </div>
 
       {/* Favorites Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
         {filteredFavorites.map((favorite) => {
           const recipe = favorite.recipe;
 
@@ -285,12 +287,14 @@ export function FavoritesList({
             return (
               <div
                 key={favorite.recipe_id}
-                className="bg-white rounded-lg shadow-md p-4 border-2 border-dashed border-gray-200"
+                className="card-minimal p-6 border-2 border-dashed border-[#E5E5E5]"
               >
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-2">⚠️</div>
-                  <p className="text-gray-600 text-sm">Recipe not available</p>
-                  <p className="text-gray-500 text-xs mt-1">
+                  <div className="text-4xl mb-3">⚠️</div>
+                  <p className="text-[#6B7280] text-sm font-medium">
+                    Recipe not available
+                  </p>
+                  <p className="text-[#6B7280] text-xs mt-1">
                     {favorite.recipe_name || `Recipe #${favorite.recipe_id}`}
                   </p>
                   <Button
@@ -298,7 +302,7 @@ export function FavoritesList({
                     disabled={removingIds.has(favorite.recipe_id)}
                     variant="secondary"
                     size="sm"
-                    className="mt-2"
+                    className="mt-4"
                   >
                     {removingIds.has(favorite.recipe_id)
                       ? "Removing..."
@@ -316,26 +320,32 @@ export function FavoritesList({
               </div>
 
               {/* Remove button overlay */}
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveFavorite(favorite.recipe_id);
                   }}
                   disabled={removingIds.has(favorite.recipe_id)}
-                  variant="secondary"
-                  size="sm"
-                  className="bg-white shadow-md hover:bg-red-50 hover:border-red-200"
+                  className="w-10 h-10 bg-white shadow-sm border border-[#E5E5E5] rounded-full 
+                           flex items-center justify-center hover:bg-[#F5F5F5] hover:border-[#8B4513]
+                           transition-colors duration-200"
                 >
-                  {removingIds.has(favorite.recipe_id) ? "⏳" : "🗑️"}
-                </Button>
+                  {removingIds.has(favorite.recipe_id) ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b border-[#8B4513]"></div>
+                  ) : (
+                    <span className="text-[#6B7280] hover:text-[#8B4513] text-sm">
+                      🗑️
+                    </span>
+                  )}
+                </button>
               </div>
 
               {/* User note if present */}
               {favorite.user_note && (
-                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
-                  <p className="text-yellow-800">
-                    <span className="font-medium">Note:</span>{" "}
+                <div className="mt-3 p-3 bg-[#F5F5F5] border border-[#E5E5E5] rounded text-sm">
+                  <p className="text-[#6B7280]">
+                    <span className="font-semibold text-[#8B4513]">Note:</span>{" "}
                     {favorite.user_note}
                   </p>
                 </div>
@@ -347,7 +357,7 @@ export function FavoritesList({
 
       {/* Show filtered count if searching */}
       {searchQuery && (
-        <div className="mt-6 text-center text-gray-600">
+        <div className="mt-8 text-center text-[#6B7280] font-medium">
           Showing {filteredFavorites.length} of {favorites.length} favorites
         </div>
       )}

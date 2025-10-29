@@ -28,7 +28,7 @@ def init_db():
         # These will become User ID 1 and User ID 2.
         user1 = User(
             email="user@email.com",
-            role=UserRole.standard
+            role=UserRole.admin
         )
         user2 = User(
             email="testuser@example.com", 

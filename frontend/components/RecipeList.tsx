@@ -18,6 +18,7 @@ interface RecipeFiltersState {
 interface RecipeListProps {
   searchParams?: RecipeListParams;
   filters?: RecipeFiltersState;
+  sortBy?: "newest" | "popular" | "quickest";
   onRecipeSelect?: (recipe: Recipe) => void;
   className?: string;
 }
@@ -27,6 +28,7 @@ const RECIPES_PER_PAGE = 12;
 export function RecipeList({
   searchParams = {},
   filters = {},
+  sortBy = "newest",
   onRecipeSelect,
   className,
 }: RecipeListProps) {
@@ -164,13 +166,34 @@ export function RecipeList({
       });
     }
 
-    return filtered;
-  }, [allRecipes, searchParams, filters]);
+    // Apply sorting
+    switch (sortBy) {
+      case "quickest":
+        filtered.sort((a, b) => {
+          const totalTimeA =
+            (a.prep_time_in_minutes || 0) + (a.cook_time_in_minutes || 0);
+          const totalTimeB =
+            (b.prep_time_in_minutes || 0) + (b.cook_time_in_minutes || 0);
+          return totalTimeA - totalTimeB;
+        });
+        break;
+      case "popular":
+        // For now, sort by number of ingredients as a proxy for complexity/popularity
+        filtered.sort((a, b) => b.ingredients.length - a.ingredients.length);
+        break;
+      case "newest":
+      default:
+        // Keep original order (newest first)
+        break;
+    }
 
-  // Reset display count when filters change
+    return filtered;
+  }, [allRecipes, searchParams, filters, sortBy]);
+
+  // Reset display count when filters or sort change
   useEffect(() => {
     setDisplayCount(RECIPES_PER_PAGE);
-  }, [searchParams, filters]);
+  }, [searchParams, filters, sortBy]);
 
   const displayedRecipes = filteredRecipes.slice(0, displayCount);
   const hasMore = displayCount < filteredRecipes.length;
@@ -192,23 +215,18 @@ export function RecipeList({
   if (loading) {
     return (
       <div className={cn("w-full", className)}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-card rounded-lg border overflow-hidden animate-pulse"
-            >
-              <div className="p-4">
-                <div className="h-6 bg-muted rounded mb-2"></div>
-                <div className="h-4 bg-muted rounded w-20 mb-3"></div>
-                <div className="flex gap-4 mb-3">
-                  <div className="h-4 bg-muted rounded w-16"></div>
-                  <div className="h-4 bg-muted rounded w-16"></div>
-                </div>
-                <div className="flex justify-between">
-                  <div className="h-4 bg-muted rounded w-20"></div>
-                  <div className="h-4 bg-muted rounded w-16"></div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="card-minimal p-8 animate-pulse">
+              <div className="h-6 bg-[#F5F5F5] rounded mb-4"></div>
+              <div className="h-4 bg-[#F5F5F5] rounded w-20 mb-6"></div>
+              <div className="flex gap-4 mb-6">
+                <div className="h-4 bg-[#F5F5F5] rounded w-16"></div>
+                <div className="h-4 bg-[#F5F5F5] rounded w-16"></div>
+              </div>
+              <div className="flex justify-between">
+                <div className="h-4 bg-[#F5F5F5] rounded w-20"></div>
+                <div className="h-4 bg-[#F5F5F5] rounded w-16"></div>
               </div>
             </div>
           ))}
@@ -221,13 +239,17 @@ export function RecipeList({
   if (error) {
     return (
       <div className={cn("w-full", className)}>
-        <div className="text-center py-12">
-          <div className="text-red-500 font-bold text-2xl mb-4">ERROR</div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+        <div className="text-center py-16">
+          <div className="text-[#8B4513] font-poppins font-bold text-2xl mb-4">
+            ERROR
+          </div>
+          <h3 className="text-lg font-semibold text-[#121212] mb-2">
             Oops! Something went wrong
           </h3>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={loadAllRecipes}>Try Again</Button>
+          <p className="text-[#6B7280] mb-6">{error}</p>
+          <Button onClick={loadAllRecipes} variant="primary">
+            Try Again
+          </Button>
         </div>
       </div>
     );
@@ -237,18 +259,26 @@ export function RecipeList({
   if (filteredRecipes.length === 0 && !loading) {
     return (
       <div className={cn("w-full", className)}>
-        <div className="text-center py-12">
-          <div className="text-muted-foreground font-bold text-2xl mb-4">
-            NO RECIPES
+        <div className="text-center py-16">
+          <div className="text-[#6B7280] font-poppins font-bold text-2xl mb-4">
+            NO RECIPES FOUND
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            No recipes found
+          <h3 className="text-lg font-semibold text-[#121212] mb-2">
+            No recipes match your criteria
           </h3>
-          <p className="text-muted-foreground">
+          <p className="text-[#6B7280] mb-6">
             {searchParams.search || searchParams.category
-              ? "Try adjusting your search or filters"
+              ? "Try adjusting your search or filters to find more recipes"
               : "No recipes available at the moment"}
           </p>
+          {(searchParams.search || Object.keys(filters).length > 0) && (
+            <Button
+              onClick={() => (window.location.href = "/recipes")}
+              variant="secondary"
+            >
+              View All Recipes
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -258,15 +288,15 @@ export function RecipeList({
     <div className={cn("w-full", className)}>
       {/* Results count */}
       {!loading && (
-        <div className="mb-4 text-sm text-muted-foreground">
+        <div className="mb-8 text-sm text-[#6B7280] font-medium">
           {filteredRecipes.length === allRecipes.length
             ? `Showing ${displayedRecipes.length} of ${allRecipes.length} recipes`
             : `Found ${filteredRecipes.length} recipes, showing ${displayedRecipes.length}`}
         </div>
       )}
 
-      {/* Recipe Grid - Optimized for mobile */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+      {/* Recipe Grid - Clean, spacious layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
         {displayedRecipes.map((recipe) => (
           <RecipeCard
             key={recipe.id}
@@ -277,18 +307,14 @@ export function RecipeList({
         ))}
       </div>
 
-      {/* Load More Button - Mobile optimized */}
+      {/* Load More Button */}
       {hasMore && (
-        <div className="flex justify-center mt-6 sm:mt-8 px-4">
+        <div className="flex justify-center mt-12">
           <Button
             onClick={handleLoadMore}
             variant="secondary"
             size="lg"
-            className={cn(
-              "w-full sm:w-auto touch-manipulation",
-              "min-h-[48px] text-base font-medium", // Better mobile touch target
-              "active:scale-95 transition-transform"
-            )}
+            className="px-8 py-3"
           >
             Show More Recipes ({filteredRecipes.length - displayCount}{" "}
             remaining)
@@ -298,8 +324,8 @@ export function RecipeList({
 
       {/* End of results message */}
       {!hasMore && displayedRecipes.length > 0 && (
-        <div className="text-center mt-6 sm:mt-8 py-4 px-4">
-          <p className="text-muted-foreground text-sm sm:text-base">
+        <div className="text-center mt-12 py-8">
+          <p className="text-[#6B7280] text-base">
             You've seen all {filteredRecipes.length} recipes
           </p>
         </div>

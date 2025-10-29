@@ -188,47 +188,39 @@ export function IngredientList({
   };
 
   return (
-    <div className={cn("bg-white", className)}>
-      {/* Serving Size Adjuster - Mobile optimized */}
+    <div className={cn("", className)}>
+      {/* Serving Size Adjuster */}
       {showScaling && (
-        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+        <div className="mb-8 p-6 bg-[#F5F5F5] rounded">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Servings:</span>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
+            <span className="text-sm font-semibold text-[#121212] tracking-wide">
+              SERVINGS
+            </span>
+            <div className="flex items-center gap-4">
+              <button
                 onClick={() => handleServingsChange(currentServings - 1)}
                 disabled={currentServings <= 1}
-                className={cn(
-                  "w-10 h-10 p-0 touch-manipulation",
-                  "min-h-[44px] min-w-[44px]", // Better touch target
-                  "text-lg font-bold",
-                  "active:scale-90 transition-transform"
-                )}
+                className="w-10 h-10 flex items-center justify-center rounded-full 
+                         bg-white text-[#8B4513] hover:bg-[#E5E5E5] transition-colors duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
               >
                 −
-              </Button>
-              <span className="w-12 text-center font-semibold text-lg">
+              </button>
+              <span className="w-12 text-center font-poppins font-semibold text-xl text-[#121212]">
                 {currentServings}
               </span>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => handleServingsChange(currentServings + 1)}
-                className={cn(
-                  "w-10 h-10 p-0 touch-manipulation",
-                  "min-h-[44px] min-w-[44px]", // Better touch target
-                  "text-lg font-bold",
-                  "active:scale-90 transition-transform"
-                )}
+                className="w-10 h-10 flex items-center justify-center rounded-full 
+                         bg-white text-[#8B4513] hover:bg-[#E5E5E5] transition-colors duration-200
+                         font-bold text-lg"
               >
                 +
-              </Button>
+              </button>
             </div>
           </div>
           {currentServings !== servings && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-[#6B7280] mt-3 text-center">
               Quantities adjusted for {currentServings} servings
             </p>
           )}
@@ -236,12 +228,15 @@ export function IngredientList({
       )}
 
       {/* Ingredients List */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {Object.entries(groupedIngredients).map(
           ([category, categoryIngredients]) => (
             <div key={category}>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 border-b border-gray-200 pb-1">
-                {category}
+              <h3
+                className="text-sm font-semibold text-[#8B4513] tracking-wide mb-4 
+                           border-b border-[#F5F5F5] pb-2"
+              >
+                {category.toUpperCase()}
               </h3>
               <div className="space-y-3">
                 {categoryIngredients.map((ingredient, index) => {
@@ -257,28 +252,27 @@ export function IngredientList({
                     <div key={ingredientKey} className="group">
                       <div
                         className={cn(
-                          "flex items-start gap-3 p-3 sm:p-4 rounded-lg border transition-all cursor-pointer touch-manipulation",
-                          "min-h-[60px]", // Minimum touch target height
-                          "active:scale-[0.98] active:shadow-sm transition-transform",
+                          "flex items-start gap-4 p-4 rounded cursor-pointer transition-all duration-200",
+                          "min-h-[60px] touch-manipulation",
                           isChecked
-                            ? "bg-green-50 border-green-200 shadow-sm"
-                            : "bg-white border-gray-200 hover:bg-gray-50 hover:shadow-sm"
+                            ? "bg-[#8B4513] text-white"
+                            : "bg-white hover:bg-[#F5F5F5] border border-[#F5F5F5]"
                         )}
                         onClick={() =>
                           toggleIngredientCheck(ingredient.ingredient_id)
                         }
                       >
-                        {/* Checkbox - Larger for mobile */}
+                        {/* Checkbox */}
                         <div
                           className={cn(
-                            "w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center mt-1 transition-colors shrink-0",
+                            "w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 transition-colors shrink-0",
                             isChecked
-                              ? "bg-green-500 border-green-500"
-                              : "border-gray-300 group-hover:border-gray-400"
+                              ? "bg-white border-white"
+                              : "border-[#E5E5E5] group-hover:border-[#8B4513]"
                           )}
                         >
                           {isChecked && (
-                            <span className="text-white text-xs font-bold">
+                            <span className="text-[#8B4513] text-xs font-bold">
                               ✓
                             </span>
                           )}
@@ -286,43 +280,37 @@ export function IngredientList({
 
                         {/* Ingredient Details */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-                                <span
-                                  className={cn(
-                                    "font-medium text-sm sm:text-base",
-                                    isChecked
-                                      ? "text-green-800 line-through"
-                                      : "text-gray-900"
-                                  )}
-                                >
-                                  {formatQuantity(
-                                    ingredient.quantity,
-                                    ingredient.unit
-                                  )}
-                                </span>
-                                <span
-                                  className={cn(
-                                    "text-sm sm:text-base wrap-break-word",
-                                    isChecked
-                                      ? "text-green-700 line-through"
-                                      : "text-gray-700"
-                                  )}
-                                >
-                                  {ingredient.ingredient_name}
-                                </span>
-                              </div>
-                            </div>
+                          <div className="flex items-baseline gap-3">
+                            <span
+                              className={cn(
+                                "font-semibold text-base",
+                                isChecked
+                                  ? "text-white line-through"
+                                  : "text-[#8B4513]"
+                              )}
+                            >
+                              {formatQuantity(
+                                ingredient.quantity,
+                                ingredient.unit
+                              )}
+                            </span>
+                            <span
+                              className={cn(
+                                "text-base",
+                                isChecked
+                                  ? "text-white line-through"
+                                  : "text-[#121212]"
+                              )}
+                            >
+                              {ingredient.ingredient_name}
+                            </span>
                           </div>
 
                           {/* Substitution Suggestions */}
-                          {substitutes.length > 0 && (
-                            <div className="mt-2 text-xs sm:text-xs text-gray-500">
+                          {substitutes.length > 0 && !isChecked && (
+                            <div className="mt-2 text-xs text-[#6B7280]">
                               <span className="font-medium">Substitutes:</span>{" "}
-                              <span className="wrap-break-word">
-                                {substitutes.join(", ")}
-                              </span>
+                              <span>{substitutes.join(", ")}</span>
                             </div>
                           )}
                         </div>
@@ -338,20 +326,18 @@ export function IngredientList({
 
       {/* Shopping List Summary */}
       {checkedIngredients.size > 0 && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="mt-8 p-4 bg-[#8B4513] text-white rounded">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-green-800">
+            <span className="text-sm font-medium">
               {checkedIngredients.size} of {ingredients.length} ingredients
               checked
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setCheckedIngredients(new Set())}
-              className="text-green-700 hover:text-green-800"
+              className="text-sm font-medium hover:underline"
             >
               Clear all
-            </Button>
+            </button>
           </div>
         </div>
       )}

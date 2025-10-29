@@ -34,6 +34,9 @@ function RecipesContent() {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "popular" | "quickest">(
+    "newest"
+  );
 
   const openSignIn = () => {
     setAuthMode("signin");
@@ -85,62 +88,104 @@ function RecipesContent() {
   const activeFiltersCount = getActiveFiltersCount();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
 
       {/* Main Content */}
-      <main className="pt-20 pb-12">
-        {/* Header */}
-        <section className="bg-card border-b border-border py-8">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div>
-                <h1 className="text-3xl font-bold text-card-foreground mb-2">
-                  Browse Recipes
-                </h1>
-                <p className="text-muted-foreground">
-                  Discover amazing recipes from our collection
-                </p>
-              </div>
+      <main className="pt-24">
+        {/* Hero Search Section - Clean, focused */}
+        <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16 border-b border-[#F5F5F5]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="font-poppins text-3xl md:text-4xl lg:text-5xl font-semibold text-[#121212] mb-4 leading-tight">
+              Browse Recipes
+            </h1>
+            <p className="text-lg text-[#6B7280] mb-8 max-w-2xl mx-auto">
+              Discover amazing recipes from our collection of{" "}
+              {/* TODO: Add dynamic count */}1,000+ recipes
+            </p>
 
-              {/* Search Bar */}
-              <div className="lg:max-w-md lg:w-full">
-                <SearchBar
-                  initialValue={searchQuery}
-                  onSearch={handleSearch}
-                  placeholder="Search recipes..."
-                  showFiltersToggle={true}
-                  onToggleFilters={() => setShowFilters(!showFilters)}
-                />
-              </div>
+            {/* Main Search Bar */}
+            <div className="max-w-2xl mx-auto">
+              <SearchBar
+                initialValue={searchQuery}
+                onSearch={handleSearch}
+                placeholder="Search by recipe name, ingredient, or cuisine..."
+                showFiltersToggle={false}
+              />
             </div>
           </div>
         </section>
 
-        {/* Filters and Results */}
-        <section className="py-8">
-          <div className="max-w-6xl mx-auto px-6">
+        {/* Results Section */}
+        <section className="px-8 md:px-16 lg:px-24 py-8 md:py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Results Header with Sort */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+              <div className="flex items-center gap-4">
+                {/* Active Filters Display */}
+                {activeFiltersCount > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-[#6B7280]">Filters:</span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-[#8B4513] text-white text-xs font-semibold px-2 py-1 rounded-full">
+                        {activeFiltersCount}
+                      </span>
+                      <button
+                        onClick={clearFilters}
+                        className="text-sm text-[#8B4513] hover:text-[#7A3E11] font-medium transition-colors duration-200"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sort Options */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-[#6B7280] font-medium">
+                  Sort by:
+                </span>
+                <div className="flex gap-2">
+                  {[
+                    { key: "newest", label: "Newest" },
+                    { key: "popular", label: "Popular" },
+                    { key: "quickest", label: "Quickest" },
+                  ].map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => setSortBy(option.key as any)}
+                      className={`px-3 py-1.5 text-sm font-medium rounded transition-colors duration-200 ${
+                        sortBy === option.key
+                          ? "bg-[#8B4513] text-white"
+                          : "text-[#6B7280] hover:text-[#121212] hover:bg-[#F5F5F5]"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Filters Sidebar */}
-              <div className="lg:w-64 shrink-0">
-                <div className="bg-card rounded-lg border p-6 sticky top-24">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-card-foreground">
-                      Filters
+              {/* Filters Sidebar - Hidden by default on mobile */}
+              <div
+                className={`lg:w-80 shrink-0 ${
+                  showFilters ? "block" : "hidden lg:block"
+                }`}
+              >
+                <div className="card-minimal p-6 sticky top-32">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="font-poppins text-lg font-semibold text-[#121212]">
+                      Refine Results
                     </h2>
-                    {activeFiltersCount > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="bg-orange-100 text-orange-800 text-sm font-medium px-2 py-1 rounded-full">
-                          {activeFiltersCount}
-                        </span>
-                        <button
-                          onClick={clearFilters}
-                          className="text-sm text-orange-600 hover:text-orange-700 font-medium"
-                        >
-                          Clear All
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="lg:hidden text-[#6B7280] hover:text-[#121212] p-2"
+                    >
+                      <span className="font-bold text-sm">✕</span>
+                    </button>
                   </div>
 
                   <RecipeFilters
@@ -152,14 +197,14 @@ function RecipesContent() {
               </div>
 
               {/* Results */}
-              <div className="flex-1">
-                {/* Recipe List */}
+              <div className="flex-1 min-w-0">
                 <RecipeList
                   searchParams={{
                     search: searchQuery || undefined,
                     category: filters.category || undefined,
                   }}
                   filters={filters}
+                  sortBy={sortBy}
                 />
               </div>
             </div>
@@ -180,12 +225,16 @@ function RecipesContent() {
 
 export default function RecipesPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Loading recipes...</p>
-      </div>
-    </div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-6"></div>
+            <p className="text-[#6B7280] font-medium">Loading recipes...</p>
+          </div>
+        </div>
+      }
+    >
       <RecipesContent />
     </Suspense>
   );

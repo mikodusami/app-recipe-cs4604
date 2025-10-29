@@ -95,18 +95,17 @@ export function RecipeCard({
   return (
     <div
       className={cn(
-        "bg-card rounded-lg border hover:shadow-lg transition-shadow duration-200 cursor-pointer overflow-hidden",
-        "touch-manipulation", // Optimize for touch devices
-        "active:scale-95 active:shadow-sm transition-transform", // Touch feedback
+        "card-minimal cursor-pointer overflow-hidden transition-all duration-200 p-5",
+        "touch-manipulation hover:shadow-md", // Subtle elevation on hover
         className
       )}
       onClick={handleCardClick}
     >
-      {/* Recipe Content */}
-      <div className="p-4 sm:p-6">
-        {/* Header with title and favorite button */}
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg sm:text-xl font-semibold text-card-foreground line-clamp-2 flex-1 mr-2">
+      {/* Recipe Content - Following 8pt grid */}
+      <div className="p-8">
+        {/* Header with title and favorite button - Level 1 Typography */}
+        <div className="flex items-start justify-between mb-6">
+          <h3 className="font-poppins text-xl font-semibold text-[#121212] line-clamp-2 flex-1 mr-3 leading-tight">
             {recipe.name}
           </h3>
 
@@ -117,15 +116,15 @@ export function RecipeCard({
               onClick={handleFavoriteToggle}
               disabled={isToggling}
               className={cn(
-                "p-2 min-w-0 hover:bg-muted touch-manipulation",
+                "p-2 min-w-0 hover:bg-[#F5F5F5] touch-manipulation",
                 "min-h-[44px] min-w-[44px]", // Minimum touch target size
                 "flex items-center justify-center"
               )}
             >
               <span
                 className={cn(
-                  "text-xs sm:text-sm font-bold transition-colors",
-                  isFavorited ? "text-orange-500" : "text-muted-foreground"
+                  "text-xs font-bold transition-colors duration-200",
+                  isFavorited ? "text-[#8B4513]" : "text-[#6B7280]"
                 )}
               >
                 {isToggling ? "..." : "FAV"}
@@ -134,37 +133,47 @@ export function RecipeCard({
           )}
         </div>
 
-        {/* Category */}
+        {/* Category - Minimal styling */}
         {recipe.category && (
-          <div className="mb-3">
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-orange-100 text-orange-800 rounded-full">
+          <div className="mb-6">
+            <span className="inline-block px-3 py-1 text-sm font-medium bg-[#F5F5F5] text-[#6B7280] rounded">
               {recipe.category}
             </span>
           </div>
         )}
 
-        {/* Time Information - Stack on mobile */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground mb-3">
+        {/* Time Information - Clean, scannable layout */}
+        <div className="flex flex-col gap-3 text-sm text-[#6B7280] mb-8">
           {recipe.prep_time_in_minutes && (
-            <div className="flex items-center gap-2">
-              <span className="text-orange-500 font-bold text-xs">PREP</span>
-              <span>{formatTime(recipe.prep_time_in_minutes)}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-[#8B4513] font-semibold text-xs tracking-wide">
+                PREP
+              </span>
+              <span className="font-medium">
+                {formatTime(recipe.prep_time_in_minutes)}
+              </span>
             </div>
           )}
 
           {recipe.cook_time_in_minutes && (
-            <div className="flex items-center gap-2">
-              <span className="text-orange-500 font-bold text-xs">COOK</span>
-              <span>{formatTime(recipe.cook_time_in_minutes)}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-[#8B4513] font-semibold text-xs tracking-wide">
+                COOK
+              </span>
+              <span className="font-medium">
+                {formatTime(recipe.cook_time_in_minutes)}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Recipe Stats */}
-        <div className="pt-3 border-t border-border">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{recipe.ingredients.length} ingredients</span>
-            <span>{recipe.steps.length} steps</span>
+        {/* Recipe Stats - Subtle separator with minimal styling */}
+        <div className="pt-6 border-t border-[#F5F5F5]">
+          <div className="flex items-center justify-between text-sm text-[#6B7280]">
+            <span className="font-medium">
+              {recipe.ingredients.length} ingredients
+            </span>
+            <span className="font-medium">{recipe.steps.length} steps</span>
           </div>
         </div>
       </div>

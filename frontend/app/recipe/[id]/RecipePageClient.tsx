@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Recipe, recipeService } from "@/lib/api";
 import { RecipeDetail } from "@/components/RecipeDetail";
+import { Navigation } from "@/components/Navigation";
+import { AuthModal } from "@/components/AuthModal";
 
 interface RecipePageClientProps {
   recipeId: string;
@@ -14,6 +16,22 @@ export function RecipePageClient({ recipeId }: RecipePageClientProps) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+
+  const openSignIn = () => {
+    setAuthMode("signin");
+    setAuthModalOpen(true);
+  };
+
+  const openSignUp = () => {
+    setAuthMode("signup");
+    setAuthModalOpen(true);
+  };
+
+  const switchAuthMode = () => {
+    setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
 
   useEffect(() => {
     if (recipeId) {
@@ -45,10 +63,13 @@ export function RecipePageClient({ recipeId }: RecipePageClientProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-orange-500 font-bold text-2xl mb-4">LOADING</div>
-          <div className="text-lg text-gray-600">Loading recipe...</div>
+      <div className="min-h-screen bg-white">
+        <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
+        <div className="pt-24 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-6"></div>
+            <p className="text-[#6B7280] font-medium">Loading recipe...</p>
+          </div>
         </div>
       </div>
     );
@@ -56,31 +77,60 @@ export function RecipePageClient({ recipeId }: RecipePageClientProps) {
 
   if (error || !recipe) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 font-bold text-2xl mb-4">ERROR</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Recipe Not Found
-          </h1>
-          <p className="text-gray-600 mb-4">
-            {error || "The recipe you're looking for doesn't exist."}
-          </p>
-          <button
-            onClick={handleBack}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            Go Back
-          </button>
+      <div className="min-h-screen bg-white">
+        <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
+        <div className="pt-24 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="text-[#8B4513] font-poppins font-bold text-2xl mb-4">
+              RECIPE NOT FOUND
+            </div>
+            <h1 className="text-2xl font-semibold text-[#121212] mb-4">
+              Oops! This recipe doesn't exist
+            </h1>
+            <p className="text-[#6B7280] mb-8">
+              {error ||
+                "The recipe you're looking for might have been moved or deleted."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={handleBack}
+                className="px-6 py-3 bg-[#8B4513] text-white rounded-full hover:bg-[#7A3E11] 
+                         transition-colors duration-200 font-medium"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={() => router.push("/recipes")}
+                className="px-6 py-3 border border-[#F5F5F5] text-[#121212] rounded 
+                         hover:bg-[#F5F5F5] transition-colors duration-200 font-medium"
+              >
+                Browse Recipes
+              </button>
+            </div>
+          </div>
         </div>
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          mode={authMode}
+          onSwitchMode={switchAuthMode}
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-white">
+      <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
+      <main className="pt-24">
         <RecipeDetail recipe={recipe} onBack={handleBack} />
-      </div>
+      </main>
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        mode={authMode}
+        onSwitchMode={switchAuthMode}
+      />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Navigation } from "@/components/Navigation";
+import { AuthModal } from "@/components/AuthModal";
 import {
   IngredientInput,
   SelectedIngredient,
@@ -15,14 +17,29 @@ const PANTRY_STORAGE_KEY = "user_pantry_ingredients";
 
 export default function IngredientSearchPage() {
   const router = useRouter();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [selectedIngredients, setSelectedIngredients] = useState<
     SelectedIngredient[]
   >([]);
   const [pantryIngredients, setPantryIngredients] = useState<
     SelectedIngredient[]
   >([]);
-  const [showPantryManager, setShowPantryManager] = useState(false);
   const [activeTab, setActiveTab] = useState<"search" | "pantry">("search");
+
+  const openSignIn = () => {
+    setAuthMode("signin");
+    setAuthModalOpen(true);
+  };
+
+  const openSignUp = () => {
+    setAuthMode("signup");
+    setAuthModalOpen(true);
+  };
+
+  const switchAuthMode = () => {
+    setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
 
   // Load pantry ingredients from localStorage on component mount
   useEffect(() => {
@@ -86,12 +103,6 @@ export default function IngredientSearchPage() {
     setPantryIngredients(newPantryIngredients);
   };
 
-  const removeFromPantry = (ingredientId: number) => {
-    setPantryIngredients(
-      pantryIngredients.filter((ing) => ing.id !== ingredientId)
-    );
-  };
-
   const clearPantry = () => {
     setPantryIngredients([]);
   };
@@ -104,286 +115,307 @@ export default function IngredientSearchPage() {
   const addSelectedToPantry = () => {
     if (selectedIngredients.length > 0) {
       addToPantry(selectedIngredients);
-      setShowPantryManager(true);
     }
   };
 
-  const getRecipeSuggestions = () => {
-    if (pantryIngredients.length === 0) return null;
-
-    return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-blue-600">💡</span>
-            <span className="font-medium text-blue-900">Quick Suggestion</span>
-          </div>
-        </div>
-        <p className="text-blue-800 text-sm mb-3">
-          You have {pantryIngredients.length} ingredients in your pantry. Use
-          them to find recipes you can make right now!
-        </p>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={usePantryIngredients}
-          className="border-blue-300 text-blue-700 hover:bg-blue-100"
-        >
-          Use My Pantry ({pantryIngredients.length} ingredients)
-        </Button>
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Find Recipes by Ingredients
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Select ingredients you have and discover recipes you can make
-          </p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
 
-        {/* Tab Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-card rounded-lg p-1 border">
-            <button
-              onClick={() => setActiveTab("search")}
-              className={cn(
-                "px-6 py-2 rounded-md font-medium transition-colors",
-                activeTab === "search"
-                  ? "bg-orange-500 text-white"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
+      {/* Main Content */}
+      <main className="pt-24">
+        {/* Hero Section */}
+        <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16 border-b border-[#F5F5F5]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1
+              className="font-poppins text-3xl md:text-4xl lg:text-5xl font-semibold 
+                         text-[#121212] mb-4 leading-tight"
             >
-              Recipe Search
-            </button>
-            <button
-              onClick={() => setActiveTab("pantry")}
-              className={cn(
-                "px-6 py-2 rounded-md font-medium transition-colors relative",
-                activeTab === "pantry"
-                  ? "bg-orange-500 text-white"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              My Pantry
-              {pantryIngredients.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {pantryIngredients.length}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+              Find Recipes by Ingredients
+            </h1>
+            <p className="text-lg text-[#6B7280] mb-8 max-w-2xl mx-auto">
+              Tell us what you have in your kitchen, and we'll show you
+              delicious recipes you can make right now
+            </p>
 
-        {activeTab === "search" ? (
-          /* Recipe Search Tab */
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left Column - Ingredient Selection */}
-            <div className="bg-card rounded-lg border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-card-foreground">
-                  Select Ingredients
-                </h2>
-                {selectedIngredients.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={addSelectedToPantry}
-                    className="text-orange-600 hover:text-orange-700"
-                  >
-                    Save to Pantry
-                  </Button>
-                )}
-              </div>
-
-              <IngredientInput
-                selectedIngredients={selectedIngredients}
-                onIngredientsChange={setSelectedIngredients}
-                showQuantity={true}
-                maxIngredients={15}
-              />
-
-              {/* Pantry Suggestion */}
-              {selectedIngredients.length === 0 && getRecipeSuggestions()}
-            </div>
-
-            {/* Right Column - Recipe Results */}
-            <div className="bg-card rounded-lg border p-6">
-              <RecipesByIngredients
-                selectedIngredients={selectedIngredients}
-                onRecipeSelect={handleRecipeSelect}
-              />
-            </div>
-          </div>
-        ) : (
-          /* Pantry Management Tab */
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    My Pantry
-                  </h2>
-                  <p className="text-gray-600 text-sm">
-                    Manage your available ingredients for quick recipe
-                    suggestions
-                  </p>
-                </div>
-                <div className="flex gap-2">
+            {/* Tab Navigation */}
+            <div className="flex justify-center">
+              <div className="bg-[#F5F5F5] rounded-full p-1">
+                <button
+                  onClick={() => setActiveTab("search")}
+                  className={cn(
+                    "px-6 py-3 rounded-full font-medium transition-all duration-200",
+                    activeTab === "search"
+                      ? "bg-[#8B4513] text-white shadow-sm"
+                      : "text-[#6B7280] hover:text-[#121212]"
+                  )}
+                >
+                  Recipe Search
+                </button>
+                <button
+                  onClick={() => setActiveTab("pantry")}
+                  className={cn(
+                    "px-6 py-3 rounded-full font-medium transition-all duration-200 relative",
+                    activeTab === "pantry"
+                      ? "bg-[#8B4513] text-white shadow-sm"
+                      : "text-[#6B7280] hover:text-[#121212]"
+                  )}
+                >
+                  My Pantry
                   {pantryIngredients.length > 0 && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        onClick={usePantryIngredients}
+                    <span
+                      className="absolute -top-1 -right-1 bg-[#8B4513] text-white text-xs 
+                                   rounded-full w-5 h-5 flex items-center justify-center"
+                    >
+                      {pantryIngredients.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Content Section */}
+        <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16">
+          <div className="max-w-7xl mx-auto">
+            {activeTab === "search" ? (
+              /* Recipe Search Tab */
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+                {/* Left Column - Ingredient Selection */}
+                <div>
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="font-poppins text-2xl font-semibold text-[#121212]">
+                      Select Ingredients
+                    </h2>
+                    {selectedIngredients.length > 0 && (
+                      <button
+                        onClick={addSelectedToPantry}
+                        className="text-[#8B4513] hover:text-[#7A3E11] font-medium 
+                                 transition-colors duration-200"
                       >
-                        🔍 Find Recipes
-                      </Button>
+                        Save to Pantry
+                      </button>
+                    )}
+                  </div>
+
+                  <IngredientInput
+                    selectedIngredients={selectedIngredients}
+                    onIngredientsChange={setSelectedIngredients}
+                    showQuantity={true}
+                    maxIngredients={15}
+                  />
+
+                  {/* Pantry Suggestion */}
+                  {selectedIngredients.length === 0 &&
+                    pantryIngredients.length > 0 && (
+                      <div className="mt-8 p-6 bg-[#8B4513] text-white rounded">
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="text-2xl">💡</span>
+                          <span className="font-semibold">
+                            Quick Suggestion
+                          </span>
+                        </div>
+                        <p className="mb-4 opacity-90">
+                          You have {pantryIngredients.length} ingredients in
+                          your pantry. Use them to find recipes you can make
+                          right now!
+                        </p>
+                        <Button
+                          variant="secondary"
+                          onClick={usePantryIngredients}
+                          className="bg-white text-[#8B4513] hover:bg-[#F5F5F5]"
+                        >
+                          Use My Pantry ({pantryIngredients.length} ingredients)
+                        </Button>
+                      </div>
+                    )}
+                </div>
+
+                {/* Right Column - Recipe Results */}
+                <div>
+                  <RecipesByIngredients
+                    selectedIngredients={selectedIngredients}
+                    onRecipeSelect={handleRecipeSelect}
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Pantry Management Tab */
+              <div className="max-w-4xl mx-auto">
+                <div className="card-minimal p-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+                    <div>
+                      <h2 className="font-poppins text-2xl font-semibold text-[#121212] mb-2">
+                        My Pantry
+                      </h2>
+                      <p className="text-[#6B7280]">
+                        Manage your available ingredients for quick recipe
+                        suggestions
+                      </p>
+                    </div>
+                    <div className="flex gap-3">
+                      {pantryIngredients.length > 0 && (
+                        <>
+                          <Button
+                            variant="primary"
+                            onClick={usePantryIngredients}
+                          >
+                            🔍 Find Recipes
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={clearPantry}
+                            className="text-[#6B7280] hover:text-[#121212]"
+                          >
+                            Clear All
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pantry Ingredient Manager */}
+                  <IngredientInput
+                    selectedIngredients={pantryIngredients}
+                    onIngredientsChange={setPantryIngredients}
+                    placeholder="Add ingredients to your pantry..."
+                    showQuantity={true}
+                    maxIngredients={50}
+                  />
+
+                  {/* Pantry Stats */}
+                  {pantryIngredients.length > 0 && (
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="text-center p-6 bg-[#F5F5F5] rounded">
+                        <div className="text-3xl font-poppins font-bold text-[#8B4513] mb-2">
+                          {pantryIngredients.length}
+                        </div>
+                        <div className="text-sm font-medium text-[#6B7280]">
+                          Total Ingredients
+                        </div>
+                      </div>
+                      <div className="text-center p-6 bg-[#F5F5F5] rounded">
+                        <div className="text-3xl font-poppins font-bold text-[#8B4513] mb-2">
+                          {
+                            pantryIngredients.filter(
+                              (ing) => ing.quantity && ing.quantity > 0
+                            ).length
+                          }
+                        </div>
+                        <div className="text-sm font-medium text-[#6B7280]">
+                          With Quantities
+                        </div>
+                      </div>
+                      <div className="text-center p-6 bg-[#F5F5F5] rounded">
+                        <div className="text-3xl font-poppins font-bold text-[#8B4513] mb-2">
+                          {
+                            new Set(
+                              pantryIngredients.map((ing) => {
+                                const name = ing.name.toLowerCase();
+                                if (
+                                  name.includes("meat") ||
+                                  name.includes("chicken") ||
+                                  name.includes("beef")
+                                )
+                                  return "Protein";
+                                if (
+                                  name.includes("onion") ||
+                                  name.includes("tomato") ||
+                                  name.includes("pepper")
+                                )
+                                  return "Vegetables";
+                                if (
+                                  name.includes("rice") ||
+                                  name.includes("pasta") ||
+                                  name.includes("flour")
+                                )
+                                  return "Grains";
+                                return "Other";
+                              })
+                            ).size
+                          }
+                        </div>
+                        <div className="text-sm font-medium text-[#6B7280]">
+                          Categories
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Empty Pantry State */}
+                  {pantryIngredients.length === 0 && (
+                    <div className="text-center py-16">
+                      <div className="text-6xl mb-6">🥫</div>
+                      <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
+                        Your pantry is empty
+                      </h3>
+                      <p className="text-[#6B7280] mb-8 max-w-md mx-auto">
+                        Add ingredients you have at home to get personalized
+                        recipe suggestions
+                      </p>
                       <Button
-                        variant="ghost"
-                        onClick={clearPantry}
-                        className="text-red-600 hover:text-red-700"
+                        variant="primary"
+                        onClick={() => setActiveTab("search")}
                       >
-                        Clear All
+                        Start Adding Ingredients
                       </Button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
-
-              {/* Pantry Ingredient Manager */}
-              <IngredientInput
-                selectedIngredients={pantryIngredients}
-                onIngredientsChange={setPantryIngredients}
-                placeholder="Add ingredients to your pantry..."
-                showQuantity={true}
-                maxIngredients={50}
-              />
-
-              {/* Pantry Stats */}
-              {pantryIngredients.length > 0 && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {pantryIngredients.length}
-                    </div>
-                    <div className="text-sm text-blue-800">
-                      Total Ingredients
-                    </div>
-                  </div>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-green-600">
-                      {
-                        pantryIngredients.filter(
-                          (ing) => ing.quantity && ing.quantity > 0
-                        ).length
-                      }
-                    </div>
-                    <div className="text-sm text-green-800">
-                      With Quantities
-                    </div>
-                  </div>
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-purple-600">
-                      {
-                        new Set(
-                          pantryIngredients.map((ing) => {
-                            const name = ing.name.toLowerCase();
-                            if (
-                              name.includes("meat") ||
-                              name.includes("chicken") ||
-                              name.includes("beef")
-                            )
-                              return "Protein";
-                            if (
-                              name.includes("onion") ||
-                              name.includes("tomato") ||
-                              name.includes("pepper")
-                            )
-                              return "Vegetables";
-                            if (
-                              name.includes("rice") ||
-                              name.includes("pasta") ||
-                              name.includes("flour")
-                            )
-                              return "Grains";
-                            return "Other";
-                          })
-                        ).size
-                      }
-                    </div>
-                    <div className="text-sm text-purple-800">Categories</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Empty Pantry State */}
-              {pantryIngredients.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🥫</div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Your pantry is empty
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Add ingredients you have at home to get personalized recipe
-                    suggestions
-                  </p>
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant="secondary"
-                      onClick={() => setActiveTab("search")}
-                    >
-                      Start Adding Ingredients
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        )}
+        </section>
 
         {/* Quick Actions Footer */}
-        <div className="mt-12 text-center">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <section className="px-8 md:px-16 lg:px-24 py-12 bg-[#F5F5F5]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="font-poppins text-lg font-semibold text-[#121212] mb-6">
               Quick Actions
             </h3>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button
-                variant="ghost"
+              <button
                 onClick={() => router.push("/")}
-                className="text-gray-600"
+                className="flex items-center gap-2 px-4 py-2 text-[#6B7280] hover:text-[#121212] 
+                         transition-colors duration-200"
               >
-                🏠 Browse All Recipes
-              </Button>
-              <Button
-                variant="ghost"
+                <span>🏠</span>
+                <span>Browse All Recipes</span>
+              </button>
+              <button
                 onClick={() => router.push("/my-recipes")}
-                className="text-gray-600"
+                className="flex items-center gap-2 px-4 py-2 text-[#6B7280] hover:text-[#121212] 
+                         transition-colors duration-200"
               >
-                ❤️ My Favorites
-              </Button>
+                <span>❤️</span>
+                <span>My Favorites</span>
+              </button>
               {pantryIngredients.length > 0 && (
-                <Button
-                  variant="ghost"
+                <button
                   onClick={() => {
                     setSelectedIngredients([...pantryIngredients]);
                     setActiveTab("search");
                   }}
-                  className="text-blue-600"
+                  className="flex items-center gap-2 px-4 py-2 text-[#8B4513] hover:text-[#7A3E11] 
+                           transition-colors duration-200 font-medium"
                 >
-                  🔍 Search with Pantry
-                </Button>
+                  <span>🔍</span>
+                  <span>Search with Pantry</span>
+                </button>
               )}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        mode={authMode}
+        onSwitchMode={switchAuthMode}
+      />
     </div>
   );
 }

@@ -188,12 +188,12 @@ export function UserProfile({ className }: UserProfileProps) {
   // Show authentication required message
   if (!isAuthenticated || !user) {
     return (
-      <div className={cn("text-center py-12", className)}>
-        <div className="text-6xl mb-4">🔒</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className={cn("text-center py-16", className)}>
+        <div className="text-6xl mb-6">🔒</div>
+        <h3 className="font-poppins text-xl font-semibold text-[#121212] mb-3">
           Sign in required
         </h3>
-        <p className="text-gray-600">
+        <p className="text-[#6B7280]">
           Please sign in to view and manage your profile.
         </p>
       </div>
@@ -201,13 +201,13 @@ export function UserProfile({ className }: UserProfileProps) {
   }
 
   return (
-    <div className={cn("max-w-2xl mx-auto", className)}>
+    <div className={cn("max-w-4xl mx-auto", className)}>
       {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+      <div className="card-minimal p-8 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
+          <div className="flex items-center space-x-6">
             {/* Avatar */}
-            <div className="w-16 h-16 bg-linear-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-[#8B4513] rounded-full flex items-center justify-center">
               <span className="text-2xl text-white font-bold">
                 {user.email.charAt(0).toUpperCase()}
               </span>
@@ -215,8 +215,10 @@ export function UserProfile({ className }: UserProfileProps) {
 
             {/* User Info */}
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{user.email}</h1>
-              <p className="text-gray-600 capitalize">{user.role} User</p>
+              <h1 className="font-poppins text-2xl font-semibold text-[#121212]">
+                {user.email}
+              </h1>
+              <p className="text-[#6B7280] capitalize">{user.role} User</p>
             </div>
           </div>
 
@@ -232,29 +234,31 @@ export function UserProfile({ className }: UserProfileProps) {
 
         {/* Profile Stats */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-orange-50 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">❤️</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-[#F5F5F5] rounded p-6">
+              <div className="flex items-center space-x-4">
+                <span className="text-3xl">❤️</span>
                 <div>
-                  <p className="text-2xl font-bold text-orange-600">
+                  <p className="text-3xl font-poppins font-bold text-[#8B4513]">
                     {stats.favoritesCount}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm font-medium text-[#6B7280]">
                     Favorite {stats.favoritesCount === 1 ? "Recipe" : "Recipes"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">📅</span>
+            <div className="bg-[#F5F5F5] rounded p-6">
+              <div className="flex items-center space-x-4">
+                <span className="text-3xl">📅</span>
                 <div>
-                  <p className="text-sm font-medium text-blue-600">
-                    Member Since
+                  <p className="text-sm font-semibold text-[#8B4513] tracking-wide">
+                    MEMBER SINCE
                   </p>
-                  <p className="text-sm text-gray-600">{stats.joinDate}</p>
+                  <p className="text-sm font-medium text-[#6B7280]">
+                    {stats.joinDate}
+                  </p>
                 </div>
               </div>
             </div>
@@ -263,14 +267,14 @@ export function UserProfile({ className }: UserProfileProps) {
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-green-800 text-sm">{success}</p>
+          <div className="mb-6 p-4 bg-[#8B4513] text-white rounded">
+            <p className="text-sm font-medium">{success}</p>
           </div>
         )}
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-800 text-sm">{error}</p>
+          <div className="mb-6 p-4 bg-[#F5F5F5] border border-[#E5E5E5] rounded">
+            <p className="text-[#8B4513] text-sm font-medium">{error}</p>
           </div>
         )}
 
@@ -356,25 +360,25 @@ export function UserProfile({ className }: UserProfileProps) {
       </div>
 
       {/* Account Settings */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="card-minimal p-8">
+        <h2 className="font-poppins text-lg font-semibold text-[#121212] mb-6">
           Account Settings
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-8">
           {/* Privacy Settings */}
-          <div className="border-b border-gray-200 pb-4">
-            <h3 className="text-md font-medium text-gray-900 mb-2">
+          <div className="border-b border-[#F5F5F5] pb-6">
+            <h3 className="text-md font-semibold text-[#121212] mb-3">
               Privacy & Data
             </h3>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-[#6B7280] mb-4">
               Your account data is kept private and secure. We only use your
               information to provide recipe recommendations and save your
               preferences.
             </p>
-            <div className="flex items-center space-x-2">
-              <span className="text-green-600">✓</span>
-              <span className="text-sm text-gray-700">
+            <div className="flex items-center space-x-3">
+              <span className="text-[#8B4513]">✓</span>
+              <span className="text-sm font-medium text-[#6B7280]">
                 Data encrypted and secure
               </span>
             </div>
@@ -382,11 +386,11 @@ export function UserProfile({ className }: UserProfileProps) {
 
           {/* Account Actions */}
           <div>
-            <h3 className="text-md font-medium text-gray-900 mb-2">
+            <h3 className="text-md font-semibold text-[#121212] mb-4">
               Account Actions
             </h3>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Button
                 onClick={logout}
                 variant="secondary"
@@ -397,15 +401,15 @@ export function UserProfile({ className }: UserProfileProps) {
 
               <Button
                 onClick={handleDeleteAccount}
-                variant="secondary"
-                className="w-full justify-center text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+                variant="ghost"
+                className="w-full justify-center text-[#6B7280] hover:text-[#121212] hover:bg-[#F5F5F5]"
                 disabled={loading}
               >
                 {loading ? "Processing..." : "Delete Account"}
               </Button>
             </div>
 
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-[#6B7280] mt-4">
               Deleting your account will permanently remove all your data,
               including favorites and preferences. This action cannot be undone.
             </p>

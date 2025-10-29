@@ -3,8 +3,11 @@
 import React, { useState } from "react";
 import { Recipe } from "@/lib/api";
 import { useUser } from "@/contexts/UserContext";
+import { Navigation } from "@/components/Navigation";
+import { AuthModal } from "@/components/AuthModal";
 import { FavoritesList } from "@/components/FavoritesList";
 import { UserProfile } from "@/components/UserProfile";
+
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -12,10 +15,26 @@ import { useRouter } from "next/navigation";
 type TabType = "favorites" | "profile";
 
 export default function MyRecipesPage() {
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, user } = useUser();
   const router = useRouter();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [activeTab, setActiveTab] = useState<TabType>("favorites");
   const [exportLoading, setExportLoading] = useState(false);
+
+  const openSignIn = () => {
+    setAuthMode("signin");
+    setAuthModalOpen(true);
+  };
+
+  const openSignUp = () => {
+    setAuthMode("signup");
+    setAuthModalOpen(true);
+  };
+
+  const switchAuthMode = () => {
+    setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
 
   const handleRecipeClick = (recipe: Recipe) => {
     router.push(`/recipe/${recipe.id}`);
@@ -65,144 +84,132 @@ export default function MyRecipesPage() {
   // Show authentication required message
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-6xl mb-6">🔒</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Sign in Required
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Please sign in to access your recipes, favorites, and profile
-            settings.
-          </p>
-          <Button onClick={() => router.push("/")} className="w-full">
-            Go to Home Page
-          </Button>
+      <div className="min-h-screen bg-white">
+        <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
+        <div className="pt-24 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md mx-auto px-6">
+            <div className="text-6xl mb-6">🔒</div>
+            <h1 className="font-poppins text-3xl font-semibold text-[#121212] mb-4">
+              Sign in Required
+            </h1>
+            <p className="text-[#6B7280] mb-8">
+              Please sign in to access your recipes, favorites, and profile
+              settings.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="primary" onClick={openSignUp}>
+                Sign Up
+              </Button>
+              <Button variant="secondary" onClick={openSignIn}>
+                Sign In
+              </Button>
+            </div>
+          </div>
         </div>
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          mode={authMode}
+          onSwitchMode={switchAuthMode}
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Recipes</h1>
-              <p className="text-gray-600 mt-1">
-                Manage your favorite recipes and profile settings
-              </p>
-            </div>
-
-            {/* Export Button - only show on favorites tab */}
-            {activeTab === "favorites" && (
-              <Button
-                onClick={handleExportFavorites}
-                disabled={exportLoading}
-                variant="secondary"
-                className="hidden sm:flex"
-              >
-                {exportLoading ? "Exporting..." : "📤 Export Favorites"}
-              </Button>
-            )}
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="flex space-x-8 border-b">
-            <button
-              onClick={() => setActiveTab("favorites")}
-              className={cn(
-                "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
-                activeTab === "favorites"
-                  ? "border-orange-500 text-orange-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              )}
-            >
-              ❤️ Favorites
-            </button>
-
-            <button
-              onClick={() => setActiveTab("profile")}
-              className={cn(
-                "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
-                activeTab === "profile"
-                  ? "border-orange-500 text-orange-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              )}
-            >
-              👤 Profile
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === "favorites" && (
-          <div>
-            {/* Mobile Export Button */}
-            <div className="sm:hidden mb-4">
-              <Button
-                onClick={handleExportFavorites}
-                disabled={exportLoading}
-                variant="secondary"
-                size="sm"
-                className="w-full"
-              >
-                {exportLoading ? "Exporting..." : "📤 Export Favorites"}
-              </Button>
+      <main className="pt-24">
+        {/* Hero Section */}
+        <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16 border-b border-[#F5F5F5]">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+              <div>
+                <h1
+                  className="font-poppins text-3xl md:text-4xl lg:text-5xl font-semibold 
+                             text-[#121212] mb-4 leading-tight"
+                >
+                  My Recipes
+                </h1>
+                <p className="text-lg text-[#6B7280] max-w-2xl">
+                  Manage your favorite recipes and profile settings
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {activeTab === "favorites" && (
+                  <Button
+                    onClick={handleExportFavorites}
+                    disabled={exportLoading}
+                    variant="secondary"
+                    className="flex items-center gap-2"
+                  >
+                    <span className="text-xs">📤</span>
+                    {exportLoading ? "Exporting..." : "Export Favorites"}
+                  </Button>
+                )}
+              </div>
             </div>
 
-            {/* Favorites List */}
-            <div data-favorites-list>
-              <FavoritesList
-                onRecipeClick={handleRecipeClick}
-                className="w-full"
-              />
+            {/* Tab Navigation */}
+            <div className="flex justify-center lg:justify-start mt-8">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveTab("favorites")}
+                  className={cn(
+                    "px-6 py-3 rounded font-medium transition-all duration-200 flex items-center gap-2",
+                    activeTab === "favorites"
+                      ? "bg-[#8B4513] text-white shadow-sm"
+                      : "bg-[#F5F5F5] text-[#6B7280] hover:text-[#121212] hover:bg-[#E5E5E5]"
+                  )}
+                >
+                  <span className="text-sm">❤️</span>
+                  <span>Favorites</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={cn(
+                    "px-6 py-3 rounded font-medium transition-all duration-200 flex items-center gap-2",
+                    activeTab === "profile"
+                      ? "bg-[#8B4513] text-white shadow-sm"
+                      : "bg-[#F5F5F5] text-[#6B7280] hover:text-[#121212] hover:bg-[#E5E5E5]"
+                  )}
+                >
+                  <span className="text-sm">👤</span>
+                  <span>Profile</span>
+                </button>
+              </div>
             </div>
           </div>
-        )}
+        </section>
 
-        {activeTab === "profile" && <UserProfile className="w-full" />}
-      </div>
+        {/* Content Section */}
+        <section className="px-8 md:px-16 lg:px-24 py-12 md:py-16">
+          <div className="max-w-7xl mx-auto">
+            {activeTab === "favorites" && (
+              <div data-favorites-list>
+                <FavoritesList
+                  onRecipeClick={handleRecipeClick}
+                  className="w-full"
+                />
+              </div>
+            )}
 
-      {/* Recently Viewed Section - Placeholder for future implementation */}
-      {activeTab === "favorites" && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t bg-white mt-8">
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">🕒</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Recently Viewed
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Your recently viewed recipes will appear here.
-            </p>
-            <p className="text-sm text-gray-500">
-              This feature will be available in a future update.
-            </p>
+            {activeTab === "profile" && <UserProfile className="w-full" />}
           </div>
-        </div>
-      )}
+        </section>
+      </main>
 
-      {/* Personal Notes Section - Placeholder for future implementation */}
-      {activeTab === "favorites" && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t bg-gray-50">
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">📝</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Recipe Notes
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Add personal notes and modifications to your favorite recipes.
-            </p>
-            <p className="text-sm text-gray-500">
-              This feature will be available in a future update.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        mode={authMode}
+        onSwitchMode={switchAuthMode}
+      />
     </div>
   );
 }

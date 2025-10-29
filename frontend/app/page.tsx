@@ -5,7 +5,7 @@ import { useUser } from "@/contexts/UserContext";
 import { Navigation } from "@/components/Navigation";
 import { AuthModal } from "@/components/AuthModal";
 import { Button } from "@/components/ui/Button";
-import { SearchBar } from "@/components/SearchBar";
+
 import { RecipeCard } from "@/components/RecipeCard";
 import { recipeService, Recipe, favoritesService } from "@/lib/api";
 
@@ -14,11 +14,8 @@ export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
-  const [trendingRecipes, setTrendingRecipes] = useState<Recipe[]>([]);
-  const [recipeOfTheDay, setRecipeOfTheDay] = useState<Recipe | null>(null);
   const [recentActivity, setRecentActivity] = useState<Recipe[]>([]);
   const [loadingRecipes, setLoadingRecipes] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const openSignIn = () => {
     setAuthMode("signin");
@@ -34,12 +31,6 @@ export default function Home() {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
   };
 
-  const handleSearch = (query: string) => {
-    if (query.trim()) {
-      window.location.href = `/recipes?search=${encodeURIComponent(query)}`;
-    }
-  };
-
   useEffect(() => {
     const loadRecipes = async () => {
       try {
@@ -47,20 +38,6 @@ export default function Home() {
         const featuredResponse = await recipeService.getRecipes({ limit: 6 });
         if (featuredResponse.success && featuredResponse.data) {
           setFeaturedRecipes(featuredResponse.data);
-
-          // Set recipe of the day (first recipe)
-          if (featuredResponse.data.length > 0) {
-            setRecipeOfTheDay(featuredResponse.data[0]);
-          }
-        }
-
-        // Load trending recipes (different set)
-        const trendingResponse = await recipeService.getRecipes({
-          skip: 6,
-          limit: 4,
-        });
-        if (trendingResponse.success && trendingResponse.data) {
-          setTrendingRecipes(trendingResponse.data);
         }
 
         // Load recent activity for authenticated users
@@ -96,45 +73,40 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading Recipe Assistant...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-6"></div>
+          <p className="text-[#6B7280] font-medium">
+            Loading Recipe Assistant...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navigation onSignIn={openSignIn} onSignUp={openSignUp} />
 
       {/* Main Content */}
-      <main className="pt-20 pb-12">
-        {/* Hero Section */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6 text-center">
-            <h1 className="text-5xl font-bold text-foreground mb-4">
+      <main className="pt-24">
+        {/* Hero Section - Following 8pt grid with intentional gutters */}
+        <section className="px-8 md:px-16 lg:px-24 py-16 md:py-24">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Level 1 Typography - Recipe Title equivalent */}
+            <h1 className="font-poppins text-4xl md:text-6xl lg:text-7xl font-semibold text-[#121212] mb-8 leading-tight tracking-tight">
               Recipe Assistant
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+
+            {/* Level 3 Typography - Body text with generous line height */}
+            <p className="text-lg md:text-xl text-[#6B7280] mb-8 max-w-2xl mx-auto leading-relaxed">
               Discover amazing recipes, save your favorites, and cook with
               confidence.
             </p>
 
-            {/* Quick Search */}
-            <div className="max-w-md mx-auto mb-8">
-              <SearchBar
-                initialValue={searchQuery}
-                onSearch={handleSearch}
-                placeholder="Search for recipes..."
-                showFiltersToggle={false}
-              />
-            </div>
-
-            {/* Authentication State */}
+            {/* Authentication State - Primary CTA with accent color */}
             {!isAuthenticated && (
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button variant="primary" size="lg" onClick={openSignUp}>
                   Get Started
                 </Button>
@@ -146,11 +118,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Recipes */}
-        <section className="py-12">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-foreground">
+        {/* Featured Recipes - Reduced spacing */}
+        <section className="px-8 md:px-16 lg:px-24 py-8 md:py-12">
+          <div className="max-w-6xl mx-auto">
+            {/* Level 2 Typography - Section heading */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-8">
+              <h2 className="font-poppins text-2xl md:text-3xl lg:text-4xl font-semibold text-[#121212]">
                 Featured Recipes
               </h2>
               <Button
@@ -162,20 +135,17 @@ export default function Home() {
             </div>
 
             {loadingRecipes ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12">
                 {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-card rounded-lg border p-6 animate-pulse"
-                  >
-                    <div className="h-48 bg-muted rounded-lg mb-4"></div>
-                    <div className="h-4 bg-muted rounded mb-2"></div>
-                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  <div key={i} className="card-minimal p-8 animate-pulse">
+                    <div className="h-48 bg-[#F5F5F5] rounded mb-6"></div>
+                    <div className="h-4 bg-[#F5F5F5] rounded mb-3"></div>
+                    <div className="h-4 bg-[#F5F5F5] rounded w-2/3"></div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12">
                 {featuredRecipes.map((recipe) => (
                   <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
@@ -184,19 +154,21 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Recent Activity for Authenticated Users */}
+        {/* Recent Activity - Significant vertical whitespace separation */}
         {isAuthenticated && recentActivity.length > 0 && (
-          <section className="py-12">
-            <div className="max-w-6xl mx-auto px-6">
-              <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
+          <section className="px-8 md:px-16 lg:px-24 py-16 md:py-24">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="font-poppins text-2xl md:text-3xl lg:text-4xl font-semibold text-[#121212] mb-16 text-center">
                 Your Recent Favorites
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12 mb-16">
                 {recentActivity.map((recipe) => (
                   <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
               </div>
-              <div className="text-center mt-8">
+
+              <div className="text-center">
                 <Button
                   variant="secondary"
                   onClick={() => (window.location.href = "/my-recipes")}
@@ -207,6 +179,9 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        {/* Bottom spacing for clean finish */}
+        <div className="h-16 md:h-24"></div>
       </main>
 
       {/* Auth Modal */}

@@ -157,24 +157,21 @@ export function SearchBar({
 
   return (
     <div className={cn("relative w-full max-w-2xl", className)}>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col sm:flex-row gap-2 sm:gap-2"
-      >
+      <form onSubmit={handleSubmit} className="w-full">
         {/* Search Input */}
         <div className="relative flex-1">
           <Input
             ref={inputRef}
-            type="search" // Better mobile keyboard
+            type="search"
             value={query}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className={cn(
-              "pr-12 sm:pr-10 text-base", // Larger text for mobile
-              "min-h-[48px]", // Better touch target
-              "touch-manipulation"
+              "pr-12 sm:pr-10 text-base border-[#F5F5F5] focus:border-[#8B4513] focus:ring-[#8B4513]",
+              "min-h-[48px] bg-white text-[#121212]",
+              "touch-manipulation rounded"
             )}
             autoComplete="off"
             autoCapitalize="none"
@@ -190,47 +187,13 @@ export function SearchBar({
               className={cn(
                 "absolute right-2 top-1/2 -translate-y-1/2",
                 "w-8 h-8 flex items-center justify-center",
-                "text-gray-400 hover:text-gray-600 transition-colors",
-                "touch-manipulation rounded-full hover:bg-gray-100",
-                "min-h-[32px] min-w-[32px]" // Better touch target
+                "text-[#6B7280] hover:text-[#121212] transition-colors duration-200",
+                "touch-manipulation rounded-full hover:bg-[#F5F5F5]",
+                "min-h-[32px] min-w-[32px]"
               )}
             >
-              <span className="text-gray-500 font-bold text-sm">✕</span>
+              <span className="font-bold text-sm">✕</span>
             </button>
-          )}
-        </div>
-
-        {/* Action Buttons - Mobile optimized */}
-        <div className="flex gap-2">
-          {/* Search Button */}
-          <Button
-            type="submit"
-            className={cn(
-              "px-4 sm:px-6 touch-manipulation",
-              "min-h-[48px] shrink-0",
-              "active:scale-95 transition-transform"
-            )}
-          >
-            <span className="text-blue-500 font-bold text-sm">
-              <span className="sm:hidden">SEARCH</span>
-              <span className="hidden sm:inline">GO</span>
-            </span>
-          </Button>
-
-          {/* Filters Toggle Button */}
-          {showFiltersToggle && onToggleFilters && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onToggleFilters}
-              className={cn(
-                "px-3 sm:px-4 touch-manipulation",
-                "min-h-[48px] shrink-0",
-                "active:scale-95 transition-transform"
-              )}
-            >
-              <span className="text-orange-500 font-bold text-sm">FILTERS</span>
-            </Button>
           )}
         </div>
       </form>
@@ -241,7 +204,7 @@ export function SearchBar({
           <div
             ref={suggestionsRef}
             className={cn(
-              "absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50",
+              "absolute top-full left-0 right-0 mt-2 bg-white border border-[#F5F5F5] rounded shadow-sm z-50",
               "max-h-64 sm:max-h-80 overflow-y-auto",
               "touch-manipulation"
             )}

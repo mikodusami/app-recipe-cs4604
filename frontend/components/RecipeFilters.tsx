@@ -160,256 +160,233 @@ export function RecipeFilters({
   if (!isOpen) return null;
 
   return (
-    <div
-      className={cn(
-        "bg-white border border-gray-200 rounded-lg shadow-lg",
-        "p-4 sm:p-6 touch-manipulation",
-        className
-      )}
-    >
-      {/* Header - Mobile optimized */}
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <div className="flex items-center gap-2">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-            Filters
-          </h3>
-          {activeFiltersCount > 0 && (
-            <span className="bg-orange-100 text-orange-800 text-xs sm:text-sm font-medium px-2 py-1 rounded-full">
-              {activeFiltersCount}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {activeFiltersCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleReset}
-              className={cn(
-                "touch-manipulation min-h-[44px] px-3",
-                "active:scale-95 transition-transform"
-              )}
-            >
-              Reset
-            </Button>
-          )}
-          {onClose && (
+    <div className={cn("space-y-6", className)}>
+      {/* Header - Clean, minimal */}
+      {onClose && (
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <h3 className="font-poppins text-lg font-semibold text-[#121212]">
+              Filters
+            </h3>
+            {activeFiltersCount > 0 && (
+              <span className="bg-[#8B4513] text-white text-xs font-semibold px-2 py-1 rounded-full">
+                {activeFiltersCount}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {activeFiltersCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleReset}
+                className="text-[#8B4513] hover:text-[#7A3E11] hover:bg-[#F5F5F5]"
+              >
+                Reset
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
+              className="text-[#6B7280] hover:text-[#121212] hover:bg-[#F5F5F5] p-2"
+            >
+              <span className="font-bold text-sm">✕</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Categories */}
+      <div>
+        <h4 className="text-sm font-semibold text-[#121212] mb-4 tracking-wide">
+          CATEGORY
+        </h4>
+        {loadingCategories ? (
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-10 w-20 bg-[#F5F5F5] rounded animate-pulse"
+              ></div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium rounded transition-all duration-200",
+                  "min-h-[40px] touch-manipulation",
+                  filters.category === category
+                    ? "bg-[#8B4513] text-white shadow-sm"
+                    : "bg-[#F5F5F5] text-[#6B7280] hover:bg-[#E5E5E5] hover:text-[#121212]"
+                )}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Cooking Time */}
+      <div>
+        <h4 className="text-sm font-semibold text-[#121212] mb-4 tracking-wide">
+          COOKING TIME
+        </h4>
+        <div className="grid grid-cols-2 gap-2">
+          {TIME_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => handleTimeChange("maxCookTime", option.value)}
               className={cn(
-                "touch-manipulation min-h-[44px] min-w-[44px]",
-                "active:scale-95 transition-transform"
+                "px-3 py-2 text-sm font-medium rounded transition-all duration-200",
+                "min-h-[40px] touch-manipulation",
+                filters.maxCookTime === option.value
+                  ? "bg-[#8B4513] text-white shadow-sm"
+                  : "bg-[#F5F5F5] text-[#6B7280] hover:bg-[#E5E5E5] hover:text-[#121212]"
               )}
             >
-              <span className="text-gray-500 font-bold text-sm">✕</span>
-            </Button>
-          )}
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="space-y-4 sm:space-y-6">
-        {/* Categories */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-3">Category</h4>
-          {loadingCategories ? (
-            <div className="flex gap-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-10 sm:h-8 w-20 bg-gray-200 rounded animate-pulse"
-                ></div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => handleCategoryChange(category)}
-                  className={cn(
-                    "px-3 py-2 sm:py-1.5 text-sm font-medium rounded-full border transition-all touch-manipulation",
-                    "min-h-[40px] sm:min-h-[32px]", // Better touch targets
-                    "active:scale-95 transition-transform",
-                    filters.category === category
-                      ? "bg-orange-100 border-orange-300 text-orange-800 shadow-sm"
-                      : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:shadow-sm"
-                  )}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Cooking Time */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-3">
-            Max Cooking Time
-          </h4>
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-            {TIME_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleTimeChange("maxCookTime", option.value)}
-                className={cn(
-                  "px-3 py-2 sm:py-1.5 text-sm font-medium rounded-full border transition-all touch-manipulation",
-                  "min-h-[40px] sm:min-h-[32px]", // Better touch targets
-                  "active:scale-95 transition-transform",
-                  filters.maxCookTime === option.value
-                    ? "bg-orange-100 border-orange-300 text-orange-800 shadow-sm"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:shadow-sm"
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Prep Time */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-3">
-            Max Prep Time
-          </h4>
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-            {TIME_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleTimeChange("maxPrepTime", option.value)}
-                className={cn(
-                  "px-3 py-2 sm:py-1.5 text-sm font-medium rounded-full border transition-all touch-manipulation",
-                  "min-h-[40px] sm:min-h-[32px]", // Better touch targets
-                  "active:scale-95 transition-transform",
-                  filters.maxPrepTime === option.value
-                    ? "bg-orange-100 border-orange-300 text-orange-800 shadow-sm"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:shadow-sm"
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Dietary Restrictions */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-3">
-            Dietary Restrictions
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2">
-            {DIETARY_RESTRICTIONS.map((restriction) => (
-              <button
-                key={restriction.id}
-                onClick={() => handleDietaryRestrictionToggle(restriction.id)}
-                className={cn(
-                  "px-3 py-2 sm:py-1.5 text-sm font-medium rounded-full border transition-all touch-manipulation",
-                  "flex items-center justify-center sm:justify-start gap-2",
-                  "min-h-[40px] sm:min-h-[32px]", // Better touch targets
-                  "active:scale-95 transition-transform",
-                  filters.dietaryRestrictions?.includes(restriction.id)
-                    ? "bg-green-100 border-green-300 text-green-800 shadow-sm"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:shadow-sm"
-                )}
-              >
-                <span className="font-bold text-sm">{restriction.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Ingredients */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-700">Ingredients</h4>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowIngredientSearch(!showIngredientSearch)}
+      {/* Prep Time */}
+      <div>
+        <h4 className="text-sm font-semibold text-[#121212] mb-4 tracking-wide">
+          PREP TIME
+        </h4>
+        <div className="grid grid-cols-2 gap-2">
+          {TIME_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => handleTimeChange("maxPrepTime", option.value)}
               className={cn(
-                "touch-manipulation min-h-[40px] px-3",
-                "active:scale-95 transition-transform"
+                "px-3 py-2 text-sm font-medium rounded transition-all duration-200",
+                "min-h-[40px] touch-manipulation",
+                filters.maxPrepTime === option.value
+                  ? "bg-[#8B4513] text-white shadow-sm"
+                  : "bg-[#F5F5F5] text-[#6B7280] hover:bg-[#E5E5E5] hover:text-[#121212]"
               )}
             >
-              {showIngredientSearch ? "Hide" : "Add"}
-            </Button>
-          </div>
-
-          {/* Selected Ingredients */}
-          {filters.ingredients && filters.ingredients.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {filters.ingredients.map((ingredient) => (
-                <button
-                  key={ingredient}
-                  onClick={() => handleIngredientToggle(ingredient)}
-                  className={cn(
-                    "px-3 py-2 sm:py-1.5 text-sm font-medium rounded-full",
-                    "bg-blue-100 border border-blue-300 text-blue-800 hover:bg-blue-200",
-                    "transition-all touch-manipulation",
-                    "flex items-center gap-2 min-h-[36px]",
-                    "active:scale-95 transition-transform"
-                  )}
-                >
-                  <span className="wrap-break-word">{ingredient}</span>
-                  <span className="text-blue-600 font-bold text-xs">
-                    REMOVE
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Ingredient Search */}
-          {showIngredientSearch && (
-            <div className="space-y-3">
-              <Input
-                type="search"
-                placeholder="Search ingredients..."
-                value={ingredientSearch}
-                onChange={(e) => setIngredientSearch(e.target.value)}
-                className={cn("text-base min-h-[48px] touch-manipulation")}
-                autoComplete="off"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-              />
-
-              {loadingIngredients && (
-                <div className="text-sm text-gray-500 px-2">Searching...</div>
-              )}
-
-              {availableIngredients.length > 0 && (
-                <div className="max-h-48 sm:max-h-32 overflow-y-auto border border-gray-200 rounded-md touch-manipulation">
-                  {availableIngredients.map((ingredient) => (
-                    <button
-                      key={ingredient.id}
-                      onClick={() => {
-                        handleIngredientToggle(ingredient.name);
-                        setIngredientSearch("");
-                      }}
-                      className={cn(
-                        "w-full text-left px-3 py-3 sm:py-2 hover:bg-gray-50 transition-colors",
-                        "text-sm touch-manipulation min-h-[48px] sm:min-h-[36px]",
-                        "active:bg-gray-100 border-b border-gray-100 last:border-b-0"
-                      )}
-                    >
-                      <div className="wrap-break-word">
-                        {ingredient.name}
-                        {ingredient.category && (
-                          <span className="text-gray-500 ml-2 text-xs">
-                            ({ingredient.category})
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+              {option.label}
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Dietary Restrictions */}
+      <div>
+        <h4 className="text-sm font-semibold text-[#121212] mb-4 tracking-wide">
+          DIETARY
+        </h4>
+        <div className="grid grid-cols-1 gap-2">
+          {DIETARY_RESTRICTIONS.map((restriction) => (
+            <button
+              key={restriction.id}
+              onClick={() => handleDietaryRestrictionToggle(restriction.id)}
+              className={cn(
+                "px-4 py-3 text-sm font-medium rounded transition-all duration-200",
+                "flex items-center justify-start gap-3 min-h-[48px] touch-manipulation",
+                filters.dietaryRestrictions?.includes(restriction.id)
+                  ? "bg-[#8B4513] text-white shadow-sm"
+                  : "bg-[#F5F5F5] text-[#6B7280] hover:bg-[#E5E5E5] hover:text-[#121212]"
+              )}
+            >
+              <span className="w-4 h-4 rounded border-2 flex items-center justify-center">
+                {filters.dietaryRestrictions?.includes(restriction.id) && (
+                  <span className="text-xs">✓</span>
+                )}
+              </span>
+              <span>{restriction.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Ingredients */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-sm font-semibold text-[#121212] tracking-wide">
+            INGREDIENTS
+          </h4>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowIngredientSearch(!showIngredientSearch)}
+            className="text-[#8B4513] hover:text-[#7A3E11] hover:bg-[#F5F5F5] px-3 py-1"
+          >
+            {showIngredientSearch ? "Hide" : "Add"}
+          </Button>
+        </div>
+
+        {/* Selected Ingredients */}
+        {filters.ingredients && filters.ingredients.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {filters.ingredients.map((ingredient) => (
+              <button
+                key={ingredient}
+                onClick={() => handleIngredientToggle(ingredient)}
+                className="px-3 py-2 text-sm font-medium rounded bg-[#8B4513] text-white 
+                         hover:bg-[#7A3E11] transition-colors duration-200 flex items-center gap-2"
+              >
+                <span>{ingredient}</span>
+                <span className="text-xs">✕</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Ingredient Search */}
+        {showIngredientSearch && (
+          <div className="space-y-3">
+            <Input
+              type="search"
+              placeholder="Search ingredients..."
+              value={ingredientSearch}
+              onChange={(e) => setIngredientSearch(e.target.value)}
+              className="text-base min-h-[48px]"
+              autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
+            />
+
+            {loadingIngredients && (
+              <div className="text-sm text-[#6B7280] px-2">Searching...</div>
+            )}
+
+            {availableIngredients.length > 0 && (
+              <div className="max-h-48 overflow-y-auto border border-[#F5F5F5] rounded">
+                {availableIngredients.map((ingredient) => (
+                  <button
+                    key={ingredient.id}
+                    onClick={() => {
+                      handleIngredientToggle(ingredient.name);
+                      setIngredientSearch("");
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-[#F5F5F5] transition-colors duration-200
+                             text-sm border-b border-[#F5F5F5] last:border-b-0"
+                  >
+                    <div>
+                      {ingredient.name}
+                      {ingredient.category && (
+                        <span className="text-[#6B7280] ml-2 text-xs">
+                          ({ingredient.category})
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -241,27 +241,24 @@ export function IngredientInput({
 
   return (
     <div className={cn("w-full", className)}>
-      {/* Search Input - Mobile optimized */}
-      <div className="relative mb-4">
+      {/* Search Input */}
+      <div className="relative mb-6">
         <Input
           ref={inputRef}
-          type="search" // Better mobile keyboard
+          type="search"
           value={searchQuery}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={cn(
-            "pr-12 text-base", // Larger text for mobile
-            "min-h-[48px] touch-manipulation" // Better touch target
-          )}
+          className="pr-12 text-base min-h-[48px] touch-manipulation"
           autoComplete="off"
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck="false"
         />
 
-        {/* Clear Search Button - Mobile optimized */}
+        {/* Clear Search Button */}
         {searchQuery && (
           <button
             type="button"
@@ -270,59 +267,48 @@ export function IngredientInput({
               setSearchResults([]);
               setShowCommonIngredients(true);
             }}
-            className={cn(
-              "absolute right-2 top-1/2 -translate-y-1/2",
-              "w-8 h-8 flex items-center justify-center",
-              "text-gray-400 hover:text-gray-600 transition-colors",
-              "touch-manipulation rounded-full hover:bg-gray-100",
-              "min-h-[32px] min-w-[32px]" // Better touch target
-            )}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center
+                     text-[#6B7280] hover:text-[#121212] transition-colors duration-200
+                     touch-manipulation rounded-full hover:bg-[#F5F5F5]"
           >
-            <span className="text-gray-500 font-bold text-sm">✕</span>
+            <span className="font-bold text-sm">✕</span>
           </button>
         )}
 
-        {/* Search Suggestions - Mobile optimized */}
+        {/* Search Suggestions */}
         {showSuggestions && (
           <div
             ref={suggestionsRef}
-            className={cn(
-              "absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50",
-              "max-h-64 sm:max-h-80 overflow-y-auto touch-manipulation"
-            )}
+            className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#F5F5F5] 
+                     rounded shadow-sm z-50 max-h-80 overflow-y-auto touch-manipulation"
           >
             {loading && (
-              <div className="p-4 text-center text-gray-500">
-                <span className="text-orange-500 font-bold">SEARCHING...</span>
+              <div className="p-6 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8B4513] mx-auto mb-3"></div>
+                <span className="text-[#6B7280] font-medium">Searching...</span>
               </div>
             )}
 
             {/* Search Results */}
             {!loading && searchResults.length > 0 && (
               <div className="p-2">
-                <div className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                  Search Results
+                <div className="px-3 py-2 text-xs font-semibold text-[#8B4513] tracking-wide mb-2">
+                  SEARCH RESULTS
                 </div>
                 {searchResults.map((ingredient) => (
                   <button
                     key={ingredient.id}
                     onClick={async () => await addIngredient(ingredient)}
-                    className={cn(
-                      "w-full text-left px-3 py-3 sm:py-2 hover:bg-gray-50 rounded-md transition-colors",
-                      "flex items-center gap-3 touch-manipulation",
-                      "min-h-[48px] sm:min-h-[36px]", // Better touch targets
-                      "active:bg-gray-100"
-                    )}
+                    className="w-full text-left px-4 py-3 hover:bg-[#F5F5F5] rounded transition-colors duration-200
+                             flex items-center gap-3 touch-manipulation min-h-[48px]"
                   >
-                    <span className="text-green-500 font-bold text-xs">
-                      INGREDIENT
-                    </span>
+                    <div className="w-2 h-2 bg-[#8B4513] rounded-full shrink-0"></div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-base sm:text-sm wrap-break-word">
+                      <div className="font-medium text-[#121212]">
                         {ingredient.name}
                       </div>
                       {ingredient.category && (
-                        <div className="text-xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-[#6B7280] mt-0.5">
                           {ingredient.category}
                         </div>
                       )}
@@ -334,11 +320,11 @@ export function IngredientInput({
 
             {/* No Results */}
             {!loading && searchQuery.trim() && searchResults.length === 0 && (
-              <div className="p-4 text-center text-gray-500">
-                <div className="text-gray-500 font-bold text-lg mb-2">
+              <div className="p-6 text-center">
+                <div className="text-[#6B7280] font-poppins font-bold text-lg mb-2">
                   NO RESULTS
                 </div>
-                <div className="text-sm">
+                <div className="text-sm text-[#6B7280]">
                   No ingredients found for "{searchQuery}"
                 </div>
               </div>
@@ -349,28 +335,22 @@ export function IngredientInput({
               showCommonIngredients &&
               availableCommonIngredients.length > 0 && (
                 <div className="p-2">
-                  <div className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    Common Ingredients
+                  <div className="px-3 py-2 text-xs font-semibold text-[#8B4513] tracking-wide mb-2">
+                    COMMON INGREDIENTS
                   </div>
                   {availableCommonIngredients.slice(0, 8).map((ingredient) => (
                     <button
                       key={ingredient.id}
                       onClick={async () => await addIngredient(ingredient)}
-                      className={cn(
-                        "w-full text-left px-3 py-3 sm:py-2 hover:bg-gray-50 rounded-md transition-colors",
-                        "flex items-center gap-3 touch-manipulation",
-                        "min-h-[48px] sm:min-h-[36px]", // Better touch targets
-                        "active:bg-gray-100"
-                      )}
+                      className="w-full text-left px-4 py-3 hover:bg-[#F5F5F5] rounded transition-colors duration-200
+                               flex items-center gap-3 touch-manipulation min-h-[48px]"
                     >
-                      <span className="text-orange-500 font-bold text-xs">
-                        COMMON
-                      </span>
+                      <div className="w-2 h-2 bg-[#6B7280] rounded-full shrink-0"></div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-base sm:text-sm wrap-break-word">
+                        <div className="font-medium text-[#121212]">
                           {ingredient.name}
                         </div>
-                        <div className="text-xs text-gray-500 mt-0.5">
+                        <div className="text-xs text-[#6B7280] mt-0.5">
                           {ingredient.category}
                         </div>
                       </div>
@@ -384,33 +364,31 @@ export function IngredientInput({
 
       {/* Selected Ingredients */}
       {selectedIngredients.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700">
-              Selected Ingredients ({selectedIngredients.length})
+            <h3 className="text-sm font-semibold text-[#121212] tracking-wide">
+              SELECTED INGREDIENTS ({selectedIngredients.length})
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={clearAllIngredients}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-[#6B7280] hover:text-[#121212] font-medium transition-colors duration-200"
             >
               Clear all
-            </Button>
+            </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {selectedIngredients.map((ingredient) => (
               <div
                 key={ingredient.id}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+                className="flex items-center gap-4 p-4 bg-[#F5F5F5] rounded border border-[#E5E5E5]"
               >
-                <span className="text-green-500 font-bold text-xs">ITEM</span>
+                <div className="w-3 h-3 bg-[#8B4513] rounded-full shrink-0"></div>
 
                 <div className="flex-1">
                   {editingIngredient === ingredient.id ? (
                     /* Edit Mode */
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {showQuantity && (
                         <>
                           <Input
@@ -424,7 +402,7 @@ export function IngredientInput({
                           <select
                             value={editUnit}
                             onChange={(e) => setEditUnit(e.target.value)}
-                            className="px-2 py-1 border border-gray-300 rounded text-sm"
+                            className="px-3 py-2 border border-[#E5E5E5] rounded text-sm bg-white"
                           >
                             {COMMON_UNITS.map((unit) => (
                               <option key={unit} value={unit}>
@@ -434,24 +412,22 @@ export function IngredientInput({
                           </select>
                         </>
                       )}
-                      <span className="font-medium">{ingredient.name}</span>
-                      <div className="flex gap-1 ml-auto">
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                      <span className="font-medium text-[#121212]">
+                        {ingredient.name}
+                      </span>
+                      <div className="flex gap-2 ml-auto">
+                        <button
                           onClick={saveIngredientEdit}
-                          className="text-green-600 hover:text-green-700 px-2"
+                          className="text-[#8B4513] hover:text-[#7A3E11] font-medium px-2 py-1"
                         >
-                          <span className="font-bold text-xs">SAVE</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                          Save
+                        </button>
+                        <button
                           onClick={cancelIngredientEdit}
-                          className="text-gray-500 hover:text-gray-600 px-2"
+                          className="text-[#6B7280] hover:text-[#121212] font-medium px-2 py-1"
                         >
-                          <span className="font-bold text-xs">CANCEL</span>
-                        </Button>
+                          Cancel
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -459,31 +435,29 @@ export function IngredientInput({
                     <div className="flex items-center justify-between">
                       <div>
                         {showQuantity && ingredient.quantity && (
-                          <span className="font-medium text-orange-600 mr-2">
+                          <span className="font-semibold text-[#8B4513] mr-3">
                             {ingredient.quantity} {ingredient.unit}
                           </span>
                         )}
-                        <span className="font-medium">{ingredient.name}</span>
+                        <span className="font-medium text-[#121212]">
+                          {ingredient.name}
+                        </span>
                       </div>
-                      <div className="flex gap-1">
+                      <div className="flex gap-2">
                         {showQuantity && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <button
                             onClick={() => startEditingIngredient(ingredient)}
-                            className="text-gray-500 hover:text-gray-700 px-2"
+                            className="text-[#6B7280] hover:text-[#121212] font-medium px-2 py-1"
                           >
-                            <span className="font-bold text-xs">EDIT</span>
-                          </Button>
+                            Edit
+                          </button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <button
                           onClick={() => removeIngredient(ingredient.id)}
-                          className="text-red-500 hover:text-red-600 px-2"
+                          className="text-[#6B7280] hover:text-[#121212] font-medium px-2 py-1"
                         >
-                          <span className="font-bold text-xs">REMOVE</span>
-                        </Button>
+                          Remove
+                        </button>
                       </div>
                     </div>
                   )}
@@ -494,7 +468,7 @@ export function IngredientInput({
 
           {/* Ingredient Limit Warning */}
           {selectedIngredients.length >= maxIngredients && (
-            <div className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <div className="text-sm text-[#8B4513] bg-[#F5F5F5] border border-[#E5E5E5] rounded p-4">
               Maximum of {maxIngredients} ingredients reached. Remove some to
               add more.
             </div>
@@ -504,11 +478,12 @@ export function IngredientInput({
 
       {/* Empty State */}
       {selectedIngredients.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <div className="text-green-600 font-bold text-xl mb-2">
-            INGREDIENTS
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">🥕</div>
+          <div className="font-poppins font-bold text-xl text-[#8B4513] mb-3">
+            No Ingredients Selected
           </div>
-          <p className="text-sm">
+          <p className="text-[#6B7280]">
             Start typing to search for ingredients or select from common
             ingredients above
           </p>
