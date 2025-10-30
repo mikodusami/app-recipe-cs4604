@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from ..repositories.favorite_recipe_repository import FavoriteRecipeRepository
 from ..schemas.favorite_recipe import FavoriteRecipe, FavoriteRecipeCreate, FavoriteRecipeUpdate
 
@@ -7,10 +8,25 @@ from ..schemas.favorite_recipe import FavoriteRecipe, FavoriteRecipeCreate, Favo
 class FavoriteRecipeService:
     def __init__(self, db: Session):
         self.repository = FavoriteRecipeRepository(db)
+        self.db = db
 
     def get_user_favorites(self, user_id: int, skip: int = 0, limit: int = 100) -> List[FavoriteRecipe]:
-        favorites = self.repository.get_user_favorites(user_id, skip, limit)
-        return [self._format_favorite(favorite) for favorite in favorites]
+        """ORM version"""
+        #favorites = self.repository.get_user_favorites(user_id, skip, limit)
+        #return [self._format_favorite(favorite) for favorite in favorites]
+        
+        """raw SQL version """
+        query = text("""
+        SELECT 
+        F.user_id, F.recipe_id, F.user_note, F.favorited_at, R.name AS recipe_name
+        FROM favorite_recipe F
+        LEFT JOIN recipe R ON F.recipe_id = R.id
+        WHERE user_id = :user_id 
+        LIMIT :limit OFFSET :skip 
+        """)
+        result = self.db.execute(query, {'user_id': user_id, 'limit': limit, 'skip': skip})
+        favorites = [self._format_favorite_sql(favorite) for favorite in result.fetchall()]
+        return favorites
 
     def get_favorite(self, user_id: int, recipe_id: int) -> Optional[FavoriteRecipe]:
         favorite = self.repository.get_by_user_and_recipe(user_id, recipe_id)
@@ -38,4 +54,13 @@ class FavoriteRecipeService:
             user_note=favorite.user_note,
             favorited_at=favorite.favorited_at,
             recipe_name=favorite.recipe.name if favorite.recipe else None
+        )
+    def _format_favorite_sql(self, favorite) -> FavoriteRecipe:
+        
+         return FavoriteRecipe(
+            user_id=favorite.user_id,
+            recipe_id=favorite.recipe_id,
+            user_note=favorite.user_note,
+            favorited_at=favorite.favorited_at,
+            recipe_name=favorite.recipe_name if favorite.recipe_name else None
         )
