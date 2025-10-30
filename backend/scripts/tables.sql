@@ -7,7 +7,6 @@ CREATE TABLE `recipe` (
   `prep_time_in_minutes`     INT NULL
 ) ENGINE=InnoDB;
 
----
 
 -- INGREDIENT (id, name, category)
 CREATE TABLE `ingredient` (
@@ -17,7 +16,6 @@ CREATE TABLE `ingredient` (
   CONSTRAINT uq_ingredient_name UNIQUE (`name`)
 ) ENGINE=InnoDB;
 
----
 
 -- RECIPE_INGREDIENT (recipe_id, ingredient_id, quantity, unit)
 CREATE TABLE `recipe_ingredient` (
@@ -32,7 +30,6 @@ CREATE TABLE `recipe_ingredient` (
     FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
----
 
 -- FAVORITE_RECIPE (user_id, recipe_id, user_note, favorited_at)
 CREATE TABLE `favorite_recipe` (
@@ -48,7 +45,6 @@ CREATE TABLE `favorite_recipe` (
     FOREIGN KEY (`recipe_id`) REFERENCES `recipe`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
----
 
 -- USER_PANTRY (user_id, ingredient_id, quantity, unit)
 CREATE TABLE `user_pantry` (
@@ -82,9 +78,9 @@ CREATE TABLE `ingredient_substitute` (
 -- RECIPE_STEP (recipe_id, step_order, instruction, time_in_minutes)
 CREATE TABLE `recipe_step` (
   `recipe_id`             INT NOT NULL,
-  `step_order`            INT    NOT NULL,
-  `instruction`           TEXT   NOT NULL,
-  `time_in_minutes`       INT    NULL,
+  `step_order`            INT NOT NULL,
+  `instruction`           TEXT NOT NULL,
+  `time_in_minutes`       INT NULL,
   PRIMARY KEY (`recipe_id`, `step_order`),
   CONSTRAINT fk_steps_recipe
     FOREIGN KEY (`recipe_id`) REFERENCES `recipe`(`id`) ON DELETE CASCADE
