@@ -29,22 +29,80 @@ class FavoriteRecipeService:
         return favorites
 
     def get_favorite(self, user_id: int, recipe_id: int) -> Optional[FavoriteRecipe]:
-        favorite = self.repository.get_by_user_and_recipe(user_id, recipe_id)
-        return self._format_favorite(favorite) if favorite else None
+        #favorite = self.repository.get_by_user_and_recipe(user_id, recipe_id)
+        #return self._format_favorite(favorite) if favorite else None
+        
+        query = text("""
+        SELECT 
+        F.user_id, F.recipe_id, F.user_note, F.favorited_at, R.name AS recipe_name
+        FROM favorite_recipe F
+        LEFT JOIN recipe R ON F.recipe_id = R.id
+        WHERE user_id = :user_id AND recipe_id = :recipe_id 
+        """)
+        result = self.db.execute(query, {'user_id': user_id, 'recipe_id': recipe_id})
+        favorite = [self._format_favorite_sql(favorite) for favorite in result.fetchall()]
+        return favorite
 
     def add_favorite(self, user_id: int, favorite_data: FavoriteRecipeCreate) -> FavoriteRecipe:
-        favorite = self.repository.create(user_id, favorite_data)
-        return self._format_favorite(favorite)
+        #favorite = self.repository.create(user_id, favorite_data)
+        #return self._format_favorite(favorite)
+        
+        query = text("""
+        INSERT INTO favorite_recipe (user_id, recipe_id, user_note, favorited_at)
+        VALUES (:user_id, :recipe_id, :user_note,  CURRENT_TIMESTAMP)
+        RETURNING user_id, recipe_id, user_note, favorited_at
+        """)
+        
+        result = self.db.execute(query,{'user_id': user_id, 'recipe_id': favorite_data.recipe_id, "user_note":favorite_data.user_note if favorite_data.user_note else None})
+        favorite_row = result.fetchone()
+        self.db.commit()
+        
+        favorite = self._format_favorite_sql(favorite_row)
+        return favorite
 
     def update_favorite(self, user_id: int, recipe_id: int, favorite_data: FavoriteRecipeUpdate) -> Optional[FavoriteRecipe]:
-        favorite = self.repository.update(user_id, recipe_id, favorite_data)
-        return self._format_favorite(favorite) if favorite else None
+        #favorite = self.repository.update(user_id, recipe_id, favorite_data)
+        #return self._format_favorite(favorite) if favorite else None
+        
+        query = text("""
+        UPDATE  favorite_recipe 
+        SET user_note =  :usernote, favorited_at = CURRENT_TIMESTAMP
+        WHERE user_id = :user_id AND recipe_id = :recipe_id
+        RETURNING user_id, recipe_id, user_note, favorited_at
+        """)
+        
+        result = self.db.execute(query,{'user_id': user_id, 'recipe_id': recipe_id, "user_note":favorite_data.user_note if favorite_data.user_note else None})
+        favorite_row = result.fetchone()
+        self.db.commit()
+        
+        favorite = self._format_favorite_sql(favorite_row)
+        return favorite
 
     def remove_favorite(self, user_id: int, recipe_id: int) -> bool:
-        return self.repository.delete(user_id, recipe_id)
+        #return self.repository.delete(user_id, recipe_id)
+        
+        query = text("""
+        DELETE FROM favorite_recipe 
+        WHERE user_id = :user_id AND recipe_id = :recipe_id
+        """)
+        
+        result = self.db.execute(query,{'user_id': user_id, 'recipe_id': recipe_id, })
+        self.db.commit()
+        
+        return result.rowcount > 0
 
     def is_favorited(self, user_id: int, recipe_id: int) -> bool:
-        return self.repository.is_favorited(user_id, recipe_id)
+        #return self.repository.is_favorited(user_id, recipe_id)
+        
+        query = text("""
+        SELECT * FROM favorite_recipe
+        WHERE user_id = :user_id AND recipe_id = :recipe_id
+        """
+        )
+        
+        result = self.db.execute(query, {"user_id": user_id, "recipe_id": recipe_id})
+        return result.fetchone() is not None
+        
 
     def _format_favorite(self, favorite) -> FavoriteRecipe:
         """Format favorite with recipe name"""
@@ -62,5 +120,5 @@ class FavoriteRecipeService:
             recipe_id=favorite.recipe_id,
             user_note=favorite.user_note,
             favorited_at=favorite.favorited_at,
-            recipe_name=favorite.recipe_name if favorite.recipe_name else None
+            recipe_name = getattr(favorite, "recipe_name", None)
         )
