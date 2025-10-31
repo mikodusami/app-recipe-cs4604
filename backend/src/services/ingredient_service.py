@@ -69,7 +69,7 @@ class IngredientService:
         """)
         result = self.db.execute(query, {"skip": skip, "limit": limit, "name": f'%{name}%'})
         rows = result.fetchall()
-        ingredients = [Ingredient(**dict(row)) for row in rows]
+        ingredients = [Ingredient(**row._mapping) for row in rows]
         return ingredients
 
     def create_ingredient(self, ingredient_data: IngredientCreate) -> Ingredient:
